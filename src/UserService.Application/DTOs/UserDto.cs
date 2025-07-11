@@ -11,5 +11,3 @@ public record UserDto
     public bool IsActive { get; set; } = true;
     public string FullName => $"{FirstName} {LastName}".Trim();
 }
-
-public record CreateUserDto(string FirstName, string LastName, string Email, string Password);
