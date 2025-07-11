@@ -12,7 +12,7 @@ public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserDto?>
 
     public GetUserByIdHandler(IUserRepository userRepository)
     {
-        _userRepository = userRepository;
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
     public async Task<UserDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)

@@ -26,7 +26,7 @@ public class DbInitializer
                 LastName = "Doe",
                 Email = "JohnDoe@gmail.com",
                 PasswordHash = null,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 IsActive = true,
             }
         };

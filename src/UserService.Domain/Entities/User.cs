@@ -9,5 +9,6 @@ public class User
     public string? PasswordHash { get; set; }
     public DateTime? CreatedAt { get; set; }
     public bool IsActive { get; set; } = true;
+
     public string FullName => $"{FirstName} {LastName}".Trim();
 }

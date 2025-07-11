@@ -12,4 +12,6 @@ public interface IUserRepository
     /// <returns>A task that represents the asynchronous operation, containing the user if found; otherwise, null.</returns>
     Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<User> AddAsync(User user, CancellationToken cancellationToken);
+
 }
