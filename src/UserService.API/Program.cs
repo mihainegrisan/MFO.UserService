@@ -1,25 +1,31 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.Interfaces;
+using UserService.Application.Mapping;
 using UserService.Infrastructure.Data;
 using UserService.Infrastructure.Repositories;
 using UserService.Infrastructure.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options 
     => options.UseSqlServer(builder.Configuration.GetConnectionString("UserContext")));
 
-
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // This points to the assembly where the MediatR handlers are located.
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserByIdHandler).Assembly));
 
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile(new UserServiceProfile()));
+
+
+// Uncomment the following line to enable CORS for all origins, methods, and headers.
+// builder.Services.AddCors(options => options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+// Uncomment the following line to use an in-memory database instead of SQL Server.
 //builder.Services.AddDbContext<AppDbContext>(opt =>
 //    opt.UseInMemoryDatabase("UserContext"));
 

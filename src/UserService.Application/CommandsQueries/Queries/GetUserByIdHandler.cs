@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 
@@ -9,10 +10,14 @@ public record GetUserByIdQuery(Guid Id) : IRequest<UserDto?>;
 public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserDto?>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
 
-    public GetUserByIdHandler(IUserRepository userRepository)
+    public GetUserByIdHandler(
+        IUserRepository userRepository,
+        IMapper mapper)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<UserDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
@@ -21,14 +26,6 @@ public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserDto?>
 
         return user is null 
             ? null 
-            : new UserDto
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                CreatedAt = user.CreatedAt,
-                IsActive = user.IsActive
-            };
+            : _mapper.Map<UserDto>(user);
     }
 }

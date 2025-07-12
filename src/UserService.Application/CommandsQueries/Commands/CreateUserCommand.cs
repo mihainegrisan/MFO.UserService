@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 using UserService.Domain.Entities;
@@ -10,10 +11,14 @@ public record CreateUserCommand(CreateUserDto User) : IRequest<UserDto>;
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDto>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
 
-    public CreateUserCommandHandler(IUserRepository userRepository)
+    public CreateUserCommandHandler(
+        IUserRepository userRepository,
+        IMapper mapper)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -31,15 +36,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
 
         await _userRepository.AddAsync(user, cancellationToken);
 
-        return new UserDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            PasswordHash = user.PasswordHash,
-            CreatedAt = user.CreatedAt,
-            IsActive = user.IsActive
-        };
+        return _mapper.Map<UserDto>(user);
+
     }
 }
