@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
+using FluentResults;
 using MediatR;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 
 namespace UserService.Application.CommandsQueries.Queries;
 
-public record GetUserByIdQuery(Guid Id) : IRequest<GetUserDto?>;
+public record GetUserByIdQuery(Guid Id) : IRequest<Result<GetUserDto>>;
 
-public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, GetUserDto?>
+public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, Result<GetUserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -20,12 +21,16 @@ public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, GetUserDto?>
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<GetUserDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetUserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
-        return user is null 
-            ? null 
-            : _mapper.Map<GetUserDto>(user);
+        if (user is null)
+        {
+            return Result.Fail("User not found");
+        }
+
+        var userDto = _mapper.Map<GetUserDto>(user);
+        return Result.Ok(userDto);
     }
 }

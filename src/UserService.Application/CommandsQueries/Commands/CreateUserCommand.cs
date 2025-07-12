@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentResults;
 using FluentValidation;
 using MediatR;
 using UserService.Application.DTOs;
@@ -7,9 +8,9 @@ using UserService.Domain.Entities;
 
 namespace UserService.Application.CommandsQueries.Commands;
 
-public record CreateUserCommand(CreateUserDto User) : IRequest<GetUserDto>;
+public record CreateUserCommand(CreateUserDto User) : IRequest<Result<GetUserDto>>;
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, GetUserDto>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<GetUserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -25,15 +26,15 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, GetUs
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
     }
 
-    public async Task<GetUserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GetUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request.User, cancellationToken);
-
-        // TODO: Exception Middleware to return better error results - check FluentResults
-
+        
         if (!validationResult.IsValid)
         {
-            throw new ValidationException(validationResult.Errors);
+            return Result.Fail(validationResult.ToString());
+            // same result
+            //return Result.Fail(validationResult.Errors.Select(e => e.ErrorMessage));
         }
 
         var user = new User

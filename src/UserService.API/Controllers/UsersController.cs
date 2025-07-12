@@ -26,9 +26,13 @@ public class UsersController : ControllerBase
     {
         var result = await _mediator.Send(new GetUserByIdQuery(id), cancellationToken);
 
-        return result is not null 
-            ? Ok(result) 
-            : NotFound($"User with ID {id} not found.");
+        if (result.IsFailed)
+        {
+            return NotFound(result.Errors);
+            // return NotFound(result.Errors.FirstOrDefault()?.Message ?? "User not found");
+        }
+
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -36,6 +40,11 @@ public class UsersController : ControllerBase
     {
         var result = await _mediator.Send(new CreateUserCommand(user), cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailed)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return Ok(result.Value);
     }
 }
