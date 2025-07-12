@@ -1,7 +1,9 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.Interfaces;
 using UserService.Application.Mapping;
+using UserService.Application.Validators;
 using UserService.Infrastructure.Data;
 using UserService.Infrastructure.Repositories;
 using UserService.Infrastructure.Utilities;
@@ -21,13 +23,15 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUs
 
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile(new UserServiceProfile()));
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>(ServiceLifetime.Transient);
+// Or you can register a specific validator like this:
+// builder.Services.AddScoped<IValidator<User>, CreateUserDtoValidator>();
 
 // Uncomment the following line to enable CORS for all origins, methods, and headers.
 // builder.Services.AddCors(options => options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
 // Uncomment the following line to use an in-memory database instead of SQL Server.
-//builder.Services.AddDbContext<AppDbContext>(opt =>
-//    opt.UseInMemoryDatabase("UserContext"));
+//builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("UserContext"));
 
 var app = builder.Build();
 

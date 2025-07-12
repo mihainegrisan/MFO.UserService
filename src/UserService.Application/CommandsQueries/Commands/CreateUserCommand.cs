@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using MediatR;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
@@ -12,17 +13,29 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, GetUs
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly IValidator<CreateUserDto> _validator;
 
     public CreateUserCommandHandler(
         IUserRepository userRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IValidator<CreateUserDto> validator)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _validator = validator ?? throw new ArgumentNullException(nameof(validator));
     }
 
     public async Task<GetUserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        var validationResult = await _validator.ValidateAsync(request.User, cancellationToken);
+
+        // TODO: Exception Middleware to return better error results - check FluentResults
+
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var user = new User
         {
             Id = Guid.NewGuid(),
