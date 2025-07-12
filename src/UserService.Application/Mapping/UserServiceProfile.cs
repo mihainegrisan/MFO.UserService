@@ -12,10 +12,7 @@ public class UserServiceProfile : Profile
     {
         // Define your mappings here
         // CreateMap<SourceType, DestinationType>();
-        // Example:
-        // CreateMap<User, UserDto>()
-        //     .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}".Trim()));
 
-        CreateMap<Domain.Entities.User, Application.DTOs.UserDto>();
+        CreateMap<Domain.Entities.User, Application.DTOs.GetUserDto>();
     }
 }

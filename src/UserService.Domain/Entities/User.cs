@@ -7,7 +7,7 @@ public class User
     public string? LastName { get; set; }
     public string? Email { get; set; }
     public string? PasswordHash { get; set; }
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; } = true;
 
     public string FullName => $"{FirstName} {LastName}".Trim();

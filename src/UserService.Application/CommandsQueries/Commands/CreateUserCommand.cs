@@ -6,9 +6,9 @@ using UserService.Domain.Entities;
 
 namespace UserService.Application.CommandsQueries.Commands;
 
-public record CreateUserCommand(CreateUserDto User) : IRequest<UserDto>;
+public record CreateUserCommand(CreateUserDto User) : IRequest<GetUserDto>;
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDto>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, GetUserDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -21,7 +21,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<GetUserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = new User
         {
@@ -36,7 +36,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
 
         await _userRepository.AddAsync(user, cancellationToken);
 
-        return _mapper.Map<UserDto>(user);
+        return _mapper.Map<GetUserDto>(user);
 
     }
 }
