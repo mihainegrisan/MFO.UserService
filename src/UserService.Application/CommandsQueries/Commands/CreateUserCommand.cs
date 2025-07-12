@@ -37,6 +37,13 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             //return Result.Fail(validationResult.Errors.Select(e => e.ErrorMessage));
         }
 
+        var userExists = await _userRepository.ExistsByEmailAsync(request.User.Email, cancellationToken);
+
+        if (userExists)
+        {
+            return Result.Fail($"User with email '{request.User.Email}' already exists.");
+        }
+
         var user = new User
         {
             Id = Guid.NewGuid(),
