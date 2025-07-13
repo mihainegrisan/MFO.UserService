@@ -45,6 +45,12 @@ public class UsersController : ControllerBase
             return BadRequest(result.Errors);
         }
 
-        return Ok(result.Value);
+        var createdUser = result.Value;
+
+        return CreatedAtAction(
+            nameof(Get),
+            new { id = createdUser.Id },
+            createdUser
+        );
     }
 }
