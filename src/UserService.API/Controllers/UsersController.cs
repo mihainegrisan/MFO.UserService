@@ -24,13 +24,19 @@ public class UsersController : ControllerBase
     [HttpGet("{Id}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received GET request for user with Id: {UserId}", id);
+
         var result = await _mediator.Send(new GetUserByIdQuery(id), cancellationToken);
 
         if (result.IsFailed)
         {
+            _logger.LogWarning("User with Id: {UserId} not found. Errors: {@Errors}", id, result.Errors);
+
             return NotFound(result.Errors);
             // return NotFound(result.Errors.FirstOrDefault()?.Message ?? "User not found");
         }
+
+        _logger.LogInformation("User with Id: {UserId} retrieved successfully.", id);
 
         return Ok(result.Value);
     }
@@ -38,14 +44,19 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateUserDto user, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received POST request to create user: {@User}", user);
+
         var result = await _mediator.Send(new CreateUserCommand(user), cancellationToken);
 
         if (result.IsFailed)
         {
+            _logger.LogWarning("Failed to create user. Errors: {@Errors}", result.Errors);
             return BadRequest(result.Errors);
         }
 
         var createdUser = result.Value;
+
+        _logger.LogInformation("User created successfully with Id: {UserId}", createdUser.Id);
 
         return CreatedAtAction(
             nameof(Get),
