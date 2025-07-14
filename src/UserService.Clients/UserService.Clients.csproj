@@ -1,13 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\packages\NSwag.MSBuild.14.4.0\build\NSwag.MSBuild.props" Condition="Exists('..\packages\NSwag.MSBuild.14.4.0\build\NSwag.MSBuild.props')" />
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
 
+  <Target Name="NSwag" AfterTargets="Build">
+    <Exec Command="dotnet tool run nswag run nswag.json /variables:Configuration=$(Configuration)" />
+  </Target>
+
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.4.0" />
+    <PackageReference Include="NSwag.Generation.AspNetCore" Version="14.4.0" />
+    <PackageReference Include="NSwag.MSBuild" Version="14.4.0" >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UserService.API\UserService.API.csproj" />
   </ItemGroup>
 
 </Project>
