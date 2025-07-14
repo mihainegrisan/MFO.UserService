@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.Interfaces;
 using UserService.Application.Mapping;
@@ -32,6 +33,15 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>(Ser
 
 // Uncomment the following line to use an in-memory database instead of SQL Server.
 //builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("UserContext"));
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Service", "UserService")
+    .WriteTo.Console()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
