@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NSwag;
 using Serilog;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.Interfaces;
@@ -28,6 +29,30 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>(Ser
 // Or you can register a specific validator like this:
 // builder.Services.AddScoped<IValidator<User>, CreateUserDtoValidator>();
 
+builder.Services.AddOpenApiDocument(options =>
+{
+    options.PostProcess = document =>
+    {
+        document.Info = new OpenApiInfo
+        {
+            Version = "v1",
+            Title = "User Service API",
+            Description = "An ASP.NET Core Web API for managing Users",
+            //TermsOfService = "https://example.com/terms",
+            Contact = new OpenApiContact
+            {
+                Name = "Mihai Negrisan",
+                Url = "https://github.com/mihainegrisan?tab=overview"
+            },
+            //License = new OpenApiLicense
+            //{
+            //    Name = "Example License",
+            //    Url = "https://example.com/license"
+            //}
+        };
+    };
+});
+
 // Uncomment the following line to enable CORS for all origins, methods, and headers.
 // builder.Services.AddCors(options => options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
@@ -49,6 +74,14 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    // Add OpenAPI 3.0 document serving middleware
+    // Available at: http://localhost:<port>/swagger/v1/swagger.json
+    app.UseOpenApi();
+
+    // Add web UIs to interact with the document
+    // Available at: http://localhost:<port>/swagger
+    app.UseSwaggerUi(); // UseSwaggerUI Protected by if (env.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
