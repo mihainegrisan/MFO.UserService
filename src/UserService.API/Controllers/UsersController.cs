@@ -21,7 +21,22 @@ public class UsersController : ControllerBase
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
+    /// <summary>
+    /// Gets a user by their unique identifier.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>A user</returns>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     GET api/users/3bda226a-d2fc-477f-a545-7b4dd45df670
+    ///
+    /// </remarks>
+    /// <response code="200">Returns the user with the corresponding id</response>
+    /// <response code="404">If the user wasn't found</response>
     [HttpGet("{Id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received GET request for user with Id: {UserId}", id);
@@ -41,7 +56,28 @@ public class UsersController : ControllerBase
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Creates a User.
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns>A newly created User</returns>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST api/users
+    ///     {
+    ///        "firstName": "Mihai",
+    ///        "lastName": "N",
+    ///        "email": "random1@gmail.com",
+    ///        "password": "test1234"
+    ///     }
+    /// 
+    /// </remarks>
+    /// <response code="201">Returns the newly created user</response>
+    /// <response code="400">If it fails to create the user due to validation errors</response>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post([FromBody] CreateUserDto user, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received POST request to create user: {@User}", user);
