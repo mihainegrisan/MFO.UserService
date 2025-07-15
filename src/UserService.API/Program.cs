@@ -12,7 +12,39 @@ using UserService.Infrastructure.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // To preserve the default behavior, capture the original delegate to call later.
+        var builtInFactory = options.InvalidModelStateResponseFactory;
+
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+            //logger.LogWarning("Invalid model state: {Errors}", context.ModelState.Values
+            //    .SelectMany(v => v.Errors)
+            //    .Select(e => e.ErrorMessage));
+
+            var errors = context.ModelState
+                .Where(kvp => kvp.Value?.Errors.Count > 0)
+                .Select(kvp => new {
+                    Field = kvp.Key,
+                    Messages = kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                })
+                .ToArray();
+
+            logger.LogWarning(
+                "ModelState invalid on {Path}. Errors: {@Errors}",
+                context.HttpContext.Request.Path,
+                errors);
+
+            // Invoke the default behavior, which produces a ValidationProblemDetails response.
+            // To produce a custom response, return a different implementation of IActionResult instead.
+            return builtInFactory(context);
+        };
+    });
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options 
