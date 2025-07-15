@@ -25,6 +25,7 @@ public class UsersController : ControllerBase
     /// Gets a user by their unique identifier.
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A user</returns>
     /// <remarks>
     /// Sample request:
@@ -60,6 +61,7 @@ public class UsersController : ControllerBase
     /// Creates a User.
     /// </summary>
     /// <param name="user"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A newly created User</returns>
     /// <remarks>
     /// Sample request:
