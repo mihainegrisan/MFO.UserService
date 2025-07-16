@@ -14,17 +14,16 @@ public class UserRepository : IUserRepository
         _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
-    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
-        => await _db.Users.FindAsync([id], cancellationToken);
+    public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        => _db.Users.FindAsync([id], cancellationToken).AsTask();
 
-    public async Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
-        => await _db.Users.AnyAsync(user => user.Email == email, cancellationToken);
+    public Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
+        => _db.Users.AnyAsync(user => user.Email == email, cancellationToken);
     
-
-    public async Task<User> AddAsync(User user, CancellationToken cancellationToken)
+    public Task<User> AddAsync(User user, CancellationToken cancellationToken)
     {
-        await _db.AddAsync(user, cancellationToken);
-        await _db.SaveChangesAsync(cancellationToken);
-        return user;
+        _db.AddAsync(user, cancellationToken);
+        _db.SaveChangesAsync(cancellationToken);
+        return Task.FromResult(user);
     }
 }
