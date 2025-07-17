@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using UserService.Application.Interfaces;
 using UserService.Domain.Entities;
 using UserService.Infrastructure.Data;
@@ -16,6 +17,11 @@ public class UserRepository : IUserRepository
 
     public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => _db.Users.FindAsync([id], cancellationToken).AsTask();
+
+    public Task<List<User>> GetAllAsync(CancellationToken cancellationToken)
+        => _db.Users
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
 
     public Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
         => _db.Users.AnyAsync(user => user.Email == email, cancellationToken);
