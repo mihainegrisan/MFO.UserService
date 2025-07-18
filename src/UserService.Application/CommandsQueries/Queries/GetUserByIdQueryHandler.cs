@@ -8,12 +8,12 @@ namespace UserService.Application.CommandsQueries.Queries;
 
 public record GetUserByIdQuery(Guid Id) : IRequest<Result<GetUserDto>>;
 
-public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, Result<GetUserDto>>
+public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<GetUserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
 
-    public GetUserByIdHandler(
+    public GetUserByIdQueryHandler(
         IUserRepository userRepository,
         IMapper mapper)
     {

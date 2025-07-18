@@ -53,7 +53,7 @@ builder.Services.AddDbContext<AppDbContext>(options
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // This points to the assembly where the MediatR handlers are located.
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserByIdHandler).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserByIdQueryHandler).Assembly));
 
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile(new UserServiceProfile()));
 
