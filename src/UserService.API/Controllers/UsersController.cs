@@ -58,6 +58,39 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    /// Gets all users.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns>All users</returns>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     GET api/users
+    ///
+    /// </remarks>
+    /// <response code="200">Returns all users</response>
+    /// <response code="400">If no users were found</response>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received GET request for all users.");
+
+        var result = await _mediator.Send(new GetAllUsersQuery(), cancellationToken);
+
+        if (result.IsFailed)
+        {
+            _logger.LogWarning("Failed to retrieve users. Errors: {@Errors}", result.Errors);
+            return NotFound(result.Errors);
+        }
+
+        _logger.LogInformation("Retrieved {UserCount} users successfully.", result.Value.Count);
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
     /// Creates a User.
     /// </summary>
     /// <param name="user"></param>
