@@ -18,9 +18,12 @@ public class UserRepository : IUserRepository
     public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => _db.Users.FindAsync([id], cancellationToken).AsTask();
 
-    public Task<List<User>> GetAllAsync(CancellationToken cancellationToken)
+    public Task<List<User>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         => _db.Users
             .AsNoTracking()
+            .OrderBy(u => u.Id)
+            .Skip(pageNumber * pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
     public Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
