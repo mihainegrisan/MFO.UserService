@@ -60,24 +60,29 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Gets all users.
     /// </summary>
+    /// <param name="pageNumber">The page number</param>
+    /// <param name="pageSize">The number of items on the page</param>
     /// <param name="cancellationToken"></param>
     /// <returns>All users</returns>
     /// <remarks>
     /// Sample request:
-    ///
+    /// 
     ///     GET api/users
-    ///
+    ///     GET api/users?page=2
+    ///     GET api/users?pageNumber=2&pageSize=10
+    /// 
     /// </remarks>
     /// <response code="200">Returns all users</response>
     /// <response code="400">If no users were found</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] int? pageNumber, [FromQuery] int? pageSize, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received GET request for all users.");
 
-        var result = await _mediator.Send(new GetAllUsersQuery(), cancellationToken);
+        // Can create a factory to get the correct Query to send if I decide to make multiple
+        var result = await _mediator.Send(new GetAllUsersQuery(pageNumber, pageSize), cancellationToken);
 
         if (result.IsFailed)
         {
