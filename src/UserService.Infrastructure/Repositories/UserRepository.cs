@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using UserService.Application.Interfaces;
 using UserService.Domain.Entities;
 using UserService.Infrastructure.Data;
@@ -17,6 +16,9 @@ public class UserRepository : IUserRepository
 
     public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => _db.Users.FindAsync([id], cancellationToken).AsTask();
+
+    public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+        => _db.Users.SingleOrDefaultAsync(user => user.Email == email, cancellationToken);
 
     public Task<List<User>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         => _db.Users
