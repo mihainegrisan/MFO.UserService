@@ -15,10 +15,14 @@ public class UserRepository : IUserRepository
     }
 
     public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
-        => _db.Users.FindAsync([id], cancellationToken).AsTask();
+        => _db.Users
+            .FindAsync([id], cancellationToken)
+            .AsTask();
 
     public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
-        => _db.Users.SingleOrDefaultAsync(user => user.Email == email, cancellationToken);
+        => _db.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.Email == email, cancellationToken);
 
     public Task<List<User>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         => _db.Users
@@ -29,7 +33,8 @@ public class UserRepository : IUserRepository
             .ToListAsync(cancellationToken);
 
     public Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
-        => _db.Users.AnyAsync(user => user.Email == email, cancellationToken);
+        => _db.Users
+            .AnyAsync(user => user.Email == email, cancellationToken);
     
     public Task<User> AddAsync(User user, CancellationToken cancellationToken)
     {
