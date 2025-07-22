@@ -58,6 +58,41 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    /// Gets a user by their email.
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A user</returns>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST api/users
+    ///
+    /// </remarks>
+    /// <response code="200">Returns the user with the corresponding email</response>
+    /// <response code="404">If the user wasn't found</response>
+    [HttpPost("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Post([FromBody] GetUserByEmailDto user, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received POST request to find user with Email: {UserEmail}", user.Email);
+
+        var result = await _mediator.Send(new GetUserByEmailQuery(user), cancellationToken);
+
+        if (result.IsFailed)
+        {
+            _logger.LogWarning("User with Email: {UserEmail} not found. Errors: {@Errors}", user.Email, result.Errors);
+
+            return NotFound(result.Errors);
+        }
+
+        _logger.LogInformation("User with Email: {UserEmail} retrieved successfully.", user.Email);
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
     /// Gets all users.
     /// </summary>
     /// <param name="pageNumber">The page number</param>

@@ -48,14 +48,94 @@
         }
       }
     },
+    "/api/Users/search": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Gets a user by their email.",
+        "description": "Sample request:\n            \n    POST api/users",
+        "operationId": "Users_Post",
+        "requestBody": {
+          "x-name": "user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserByEmailDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the user with the corresponding email"
+          },
+          "404": {
+            "description": "If the user wasn't found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Users_GetAll",
+        "parameters": [
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "Users"
         ],
         "summary": "Creates a User.",
         "description": "Sample request:\n            \n    POST api/users\n    {\n       \"firstName\": \"Mihai\",\n       \"lastName\": \"N\",\n       \"email\": \"random1@gmail.com\",\n       \"password\": \"test1234\"\n    }",
-        "operationId": "Users_Post",
+        "operationId": "Users_Post2",
         "requestBody": {
           "x-name": "user",
           "content": {
@@ -114,6 +194,15 @@
           "instance": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "GetUserByEmailDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string"
           }
         }
       },
