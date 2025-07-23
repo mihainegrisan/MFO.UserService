@@ -32,9 +32,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         
         if (!validationResult.IsValid)
         {
-            return Result.Fail(validationResult.ToString());
-            // same result
-            //return Result.Fail(validationResult.Errors.Select(e => e.ErrorMessage));
+            return Result.Fail(validationResult.Errors.Select(e => e.ErrorMessage));
         }
 
         var userExists = await _userRepository.ExistsByEmailAsync(request.User.Email, cancellationToken);
