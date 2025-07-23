@@ -65,7 +65,8 @@ public class GetUserByEmailQueryHandlerTests : TestBase
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.True, "Expected success flag");
+            Assert.That(result.IsSuccess, Is.True, "Expected success flag to be true");
+            Assert.That(result.IsFailed, Is.False, "Expected failure flag to be false");
             Assert.That(result.Value, Is.Not.Null, "Expected non-null Value");
 
             var dto = result.Value!;
