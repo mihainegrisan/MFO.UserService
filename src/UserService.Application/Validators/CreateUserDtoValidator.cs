@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using UserService.Application.DTOs;
+using UserService.Application.Interfaces;
 
 namespace UserService.Application.Validators;
 
 public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
 {
-    public CreateUserDtoValidator()
+    public CreateUserDtoValidator(IUserRepository userRepository)
     {
         RuleFor(user => user.FirstName)
             .NotEmpty().WithMessage("First name is required.")
@@ -15,6 +16,7 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
             .MaximumLength(50).WithMessage("Last name must not exceed 50 characters.");
         RuleFor(user => user.Email)
             .NotEmpty().WithMessage("Email is required.")
+            .MustAsync(async (email, ct) => !await userRepository.ExistsByEmailAsync(email, ct)).WithMessage("Email must be unique.")
             .EmailAddress().WithMessage("Invalid email format.")
             .MaximumLength(100).WithMessage("Email must not exceed 100 characters.");
         RuleFor(user => user.Password)
