@@ -82,4 +82,39 @@ public class GetUserByEmailQueryHandlerTests : TestBase
         await UserRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
         Mapper.Received(1).Map<GetUserDto>(Arg.Any<User>());
     }
+
+    [Test]
+    [TestCase("Email is required.")]
+    [TestCase("Invalid email format.")]
+    [TestCase("Email must not exceed 100 characters.")]
+    public async Task Handle_InvalidDto_ReturnsFailure_DoesNotCallRepoOrMapper(string errorMessage)
+    {
+        // Arrange
+        var failures = new[] {
+            new ValidationFailure("Email", errorMessage)
+        };
+
+        Validator
+            .ValidateAsync(Arg.Any<GetUserByEmailDto>(), CancellationToken.None)
+            .Returns(Task.FromResult(new ValidationResult(failures)));
+
+        var query = new GetUserByEmailQuery(new GetUserByEmailDto { Email = "" });
+
+        // Act
+        var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsFailed, Is.True, "Expected failure flag to be true");
+            Assert.That(result.IsSuccess, Is.False, "Expected success flag to be false");
+            Assert.That(result.ValueOrDefault, Is.Null, "Expected null Value");
+            Assert.That(result.Errors.Count, Is.EqualTo(1), "Should have exactly one error");
+            Assert.That(result.Errors[0].Message, Is.EqualTo(errorMessage), $"Expected error message: '{errorMessage}'");
+        });
+
+        await Validator.Received(1).ValidateAsync(Arg.Any<GetUserByEmailDto>(), CancellationToken.None);
+        await UserRepository.DidNotReceive().GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
+        Mapper.DidNotReceiveWithAnyArgs().Map<GetUserDto>(null);
+    }
 }
