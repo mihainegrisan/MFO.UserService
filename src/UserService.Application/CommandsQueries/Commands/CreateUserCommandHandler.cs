@@ -8,7 +8,7 @@ using UserService.Domain.Entities;
 
 namespace UserService.Application.CommandsQueries.Commands;
 
-public record CreateUserCommand(CreateUserDto User) : IRequest<Result<GetUserDto>>;
+public sealed record CreateUserCommand(CreateUserDto User) : IRequest<Result<GetUserDto>>;
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<GetUserDto>>
 {

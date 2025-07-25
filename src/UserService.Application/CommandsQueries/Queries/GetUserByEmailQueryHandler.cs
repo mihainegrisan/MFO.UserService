@@ -7,7 +7,7 @@ using UserService.Application.Interfaces;
 
 namespace UserService.Application.CommandsQueries.Queries;
 
-public record GetUserByEmailQuery(GetUserByEmailDto User) : IRequest<Result<GetUserDto>>;
+public sealed record GetUserByEmailQuery(GetUserByEmailDto User) : IRequest<Result<GetUserDto>>;
 
 public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, Result<GetUserDto>>
 {

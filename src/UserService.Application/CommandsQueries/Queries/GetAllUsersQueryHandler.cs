@@ -6,7 +6,7 @@ using UserService.Application.Interfaces;
 
 namespace UserService.Application.CommandsQueries.Queries;
 
-public record GetAllUsersQuery(int? PageNumber, int? PageSize) : IRequest<Result<List<GetUserDto>>>;
+public sealed record GetAllUsersQuery(int? PageNumber, int? PageSize) : IRequest<Result<List<GetUserDto>>>;
 
 public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<List<GetUserDto>>>
 {

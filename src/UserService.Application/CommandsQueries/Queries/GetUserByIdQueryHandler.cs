@@ -6,7 +6,7 @@ using UserService.Application.Interfaces;
 
 namespace UserService.Application.CommandsQueries.Queries;
 
-public record GetUserByIdQuery(Guid Id) : IRequest<Result<GetUserDto>>;
+public sealed record GetUserByIdQuery(Guid Id) : IRequest<Result<GetUserDto>>;
 
 public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<GetUserDto>>
 {
