@@ -32,7 +32,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         
         if (!validationResult.IsValid)
         {
-            return Result.Fail(validationResult.Errors.Select(e => e.ErrorMessage));
+            return Result.Fail(validationResult.Errors.Select(vf => vf.ErrorMessage));
         }
 
         var userExists = await _userRepository.ExistsByEmailAsync(request.User.Email, cancellationToken);
@@ -55,7 +55,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 
         await _userRepository.AddAsync(user, cancellationToken);
 
-        return _mapper.Map<GetUserDto>(user);
+        var userDto = _mapper.Map<GetUserDto>(user);
 
+        return Result.Ok(userDto);
     }
 }
