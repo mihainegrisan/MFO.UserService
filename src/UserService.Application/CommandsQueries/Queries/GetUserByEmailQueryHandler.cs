@@ -20,9 +20,9 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
         IMapper mapper,
         IValidator<GetUserByEmailDto> validator)
     {
-        _userRepository = userRepository;
-        _mapper = mapper;
-        _validator = validator;
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository)); ;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); ;
+        _validator = validator ?? throw new ArgumentNullException(nameof(validator)); ;
     }
 
     public async Task<Result<GetUserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
