@@ -31,7 +31,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 
         if (!validationResult.IsValid)
         {
-            return Result.Fail(validationResult.Errors.Select(e => e.ErrorMessage));
+            return Result.Fail(validationResult.Errors.Select(vf => vf.ErrorMessage));
         }
 
         var user = await _userRepository.GetByEmailAsync(request.User.Email, cancellationToken);

@@ -16,9 +16,9 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
             .MaximumLength(50).WithMessage("Last name must not exceed 50 characters.");
         RuleFor(user => user.Email)
             .NotEmpty().WithMessage("Email is required.")
-            .MustAsync(async (email, ct) => !await userRepository.ExistsByEmailAsync(email, ct)).WithMessage("Email must be unique.")
             .EmailAddress().WithMessage("Invalid email format.")
-            .MaximumLength(100).WithMessage("Email must not exceed 100 characters.");
+            .MaximumLength(100).WithMessage("Email must not exceed 100 characters.")
+            .MustAsync(async (email, ct) => !await userRepository.ExistsByEmailAsync(email, ct)).WithMessage("Email must be unique.");
         RuleFor(user => user.Password)
             .NotEmpty().WithMessage("Password is required.")
             .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
