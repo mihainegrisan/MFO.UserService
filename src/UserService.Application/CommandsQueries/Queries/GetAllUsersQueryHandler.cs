@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Immutable;
+using AutoMapper;
 using FluentResults;
 using MediatR;
 using UserService.Application.DTOs;
@@ -6,9 +7,9 @@ using UserService.Application.Interfaces;
 
 namespace UserService.Application.CommandsQueries.Queries;
 
-public sealed record GetAllUsersQuery(int? PageNumber, int? PageSize) : IRequest<Result<List<GetUserDto>>>;
+public sealed record GetAllUsersQuery(int? PageNumber, int? PageSize) : IRequest<Result<IReadOnlyList<GetUserDto>>>;
 
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<List<GetUserDto>>>
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<IReadOnlyList<GetUserDto>>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -21,7 +22,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); ;
     }
 
-    public async Task<Result<List<GetUserDto>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<GetUserDto>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var pageSize = request.PageSize.GetValueOrDefault(3);
         var pageNumber = request.PageNumber.HasValue
@@ -39,6 +40,6 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
             .Select(user => _mapper.Map<GetUserDto>(user))
             .ToList();
 
-        return Result.Ok(usersDto);
+        return Result.Ok<IReadOnlyList<GetUserDto>>(usersDto);
     }
 }
