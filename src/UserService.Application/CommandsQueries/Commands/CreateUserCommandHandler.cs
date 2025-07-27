@@ -15,15 +15,18 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IValidator<CreateUserDto> _validator;
+    private readonly IPasswordHasherService _passwordHasherService;
 
     public CreateUserCommandHandler(
         IUserRepository userRepository,
         IMapper mapper,
-        IValidator<CreateUserDto> validator)
+        IValidator<CreateUserDto> validator,
+        IPasswordHasherService passwordHasherService)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+        _passwordHasherService = passwordHasherService ?? throw new ArgumentNullException(nameof(passwordHasherService));
     }
 
     public async Task<Result<GetUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -48,7 +51,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             FirstName = request.User.FirstName,
             LastName = request.User.LastName,
             Email = request.User.Email,
-            PasswordHash = request.User.Password, // TODO: In a real application, you should hash the password before storing it
+            PasswordHash = _passwordHasherService.HashPassword(request.User.Password),
             CreatedAt = DateTime.UtcNow,
             IsActive = true
         };

@@ -8,6 +8,7 @@ using UserService.Application.Mapping;
 using UserService.Application.Validators;
 using UserService.Infrastructure.Data;
 using UserService.Infrastructure.Repositories;
+using UserService.Infrastructure.Services;
 using UserService.Infrastructure.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +52,7 @@ builder.Services.AddDbContext<AppDbContext>(options
     => options.UseSqlServer(builder.Configuration.GetConnectionString("UserContext")));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
 // This points to the assembly where the MediatR handlers are located.
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserByIdQueryHandler).Assembly));
