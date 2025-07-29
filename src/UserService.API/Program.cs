@@ -1,4 +1,6 @@
+using System.Threading.RateLimiting;
 using FluentValidation;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using NSwag;
 using Serilog;
@@ -45,6 +47,16 @@ builder.Services.AddControllers()
             return builtInFactory(context);
         };
     });
+
+var fixedWindowRateLimitedPolicy = "fixedWindowRateLimitedPolicy";
+builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyName: fixedWindowRateLimitedPolicy, opt =>
+{
+    opt.PermitLimit = 4;
+    opt.Window = TimeSpan.FromSeconds(10);
+    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    opt.QueueLimit = 2;
+    opt.AutoReplenishment = true;
+}));
 
 builder.Services.AddOpenApi();
 
@@ -118,6 +130,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUi(); // UseSwaggerUI Protected by if (env.IsDevelopment())
 }
 
+app.UseRateLimiter();
+
 app.UseHttpsRedirection();
 
 using (var scope = app.Services.CreateScope())
@@ -129,6 +143,6 @@ using (var scope = app.Services.CreateScope())
     DbInitializer.Initialize(context);
 }
 
-app.MapControllers();
+app.MapControllers().RequireRateLimiting(fixedWindowRateLimitedPolicy);
 
 app.Run();
