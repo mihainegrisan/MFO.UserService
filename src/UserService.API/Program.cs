@@ -7,6 +7,7 @@ using Serilog;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.Interfaces;
 using UserService.Application.Mapping;
+using UserService.Application.Utilities;
 using UserService.Application.Validators;
 using UserService.Infrastructure.Data;
 using UserService.Infrastructure.Repositories;
@@ -57,6 +58,13 @@ builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(policyN
     opt.QueueLimit = 2;
     opt.AutoReplenishment = true;
 }));
+
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(5)));
+    options.AddPolicy(CachePolicies.GetAll, builder => builder.Expire(TimeSpan.FromSeconds(20)));
+    options.AddPolicy(CachePolicies.FiveMinutes, builder => builder.Expire(TimeSpan.FromMinutes(5)));
+});
 
 builder.Services.AddOpenApi();
 
@@ -134,6 +142,8 @@ app.UseRateLimiter();
 
 app.UseHttpsRedirection();
 
+app.UseOutputCache();
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -143,6 +153,9 @@ using (var scope = app.Services.CreateScope())
     DbInitializer.Initialize(context);
 }
 
-app.MapControllers().RequireRateLimiting(fixedWindowRateLimitedPolicy);
+app
+    .MapControllers()
+    .RequireRateLimiting(fixedWindowRateLimitedPolicy)
+    .CacheOutput();
 
 app.Run();
