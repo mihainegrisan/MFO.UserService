@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using NSwag;
 using Serilog;
+using UserService.API.Middlewares;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.Interfaces;
 using UserService.Application.Mapping;
@@ -153,25 +154,11 @@ using (var scope = app.Services.CreateScope())
     DbInitializer.Initialize(context);
 }
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app
     .MapControllers()
     .RequireRateLimiting(fixedWindowRateLimitedPolicy)
-    .CacheOutput()
-    .AddEndpointFilter(async (context, next) =>
-{
-    app.Logger.LogInformation("{HttpMethod} request for '{RequestPath}' received at {Time}.",
-        context.HttpContext.Request.Method,
-        context.HttpContext.Request.Path.Value,
-        DateTime.Now.ToLongTimeString());
-
-    var result = await next(context);
-
-    app.Logger.LogInformation("{HttpMethod} request for '{RequestPath}' handled at {Time}.",
-        context.HttpContext.Request.Method,
-        context.HttpContext.Request.Path.Value,
-        DateTime.Now.ToLongTimeString());
-
-    return result;
-});
+    .CacheOutput();
 
 await app.RunAsync();
