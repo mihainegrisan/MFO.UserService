@@ -156,6 +156,22 @@ using (var scope = app.Services.CreateScope())
 app
     .MapControllers()
     .RequireRateLimiting(fixedWindowRateLimitedPolicy)
-    .CacheOutput();
+    .CacheOutput()
+    .AddEndpointFilter(async (context, next) =>
+{
+    app.Logger.LogInformation("{HttpMethod} request for '{RequestPath}' received at {Time}.",
+        context.HttpContext.Request.Method,
+        context.HttpContext.Request.Path.Value,
+        DateTime.Now.ToLongTimeString());
 
-app.Run();
+    var result = await next(context);
+
+    app.Logger.LogInformation("{HttpMethod} request for '{RequestPath}' handled at {Time}.",
+        context.HttpContext.Request.Method,
+        context.HttpContext.Request.Path.Value,
+        DateTime.Now.ToLongTimeString());
+
+    return result;
+});
+
+await app.RunAsync();
