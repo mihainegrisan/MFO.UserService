@@ -156,6 +156,8 @@ using (var scope = app.Services.CreateScope())
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 
+app.MapShortCircuit(404, "robots.txt", "favicon.ico");
+
 app
     .MapControllers()
     .RequireRateLimiting(fixedWindowRateLimitedPolicy)
