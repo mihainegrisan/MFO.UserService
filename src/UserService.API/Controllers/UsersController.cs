@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using UserService.Application.CommandsQueries.Commands;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.DTOs;
+using UserService.Domain.Errors;
 
 namespace UserService.API.Controllers;
 
@@ -36,7 +37,8 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns the user with the corresponding id</response>
     /// <response code="404">If the user wasn't found</response>
     [HttpGet("{Id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
@@ -48,8 +50,12 @@ public class UsersController : ControllerBase
         {
             _logger.LogWarning("User with Id: {UserId} not found. Errors: {@Errors}", id, result.Errors);
 
-            return NotFound(result.Errors);
-            // return NotFound(result.Errors.FirstOrDefault()?.Message ?? "User not found");
+            if (result.HasError<NotFoundError>())
+            {
+                return NotFound();
+        }
+
+            return BadRequest(result.Errors);
         }
 
         _logger.LogInformation("User with Id: {UserId} retrieved successfully.", id);
@@ -72,11 +78,12 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns the user with the corresponding email</response>
     /// <response code="404">If the user wasn't found</response>
     [HttpPost("search")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Post([FromBody] GetUserByEmailDto user, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Received POST request to find user with Email: {UserEmail}", user.Email);
+        _logger.LogInformation("Received POST request to search user by Email: {UserEmail}", user.Email);
 
         var result = await _mediator.Send(new GetUserByEmailQuery(user), cancellationToken);
 
@@ -84,7 +91,12 @@ public class UsersController : ControllerBase
         {
             _logger.LogWarning("User with Email: {UserEmail} not found. Errors: {@Errors}", user.Email, result.Errors);
 
-            return NotFound(result.Errors);
+            if (result.HasError<NotFoundError>())
+            {
+                return NotFound();
+        }
+
+            return BadRequest(result.Errors);
         }
 
         _logger.LogInformation("User with Email: {UserEmail} retrieved successfully.", user.Email);
@@ -108,11 +120,12 @@ public class UsersController : ControllerBase
     /// 
     /// </remarks>
     /// <response code="200">Returns all users</response>
-    /// <response code="400">If no users were found</response>
+    /// <response code="404">If no users were found</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAll([FromQuery] int? pageNumber, [FromQuery] int? pageSize, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     {
         _logger.LogInformation("Received GET request for all users.");
 
@@ -122,7 +135,13 @@ public class UsersController : ControllerBase
         if (result.IsFailed)
         {
             _logger.LogWarning("Failed to retrieve users. Errors: {@Errors}", result.Errors);
-            return NotFound(result.Errors);
+            
+            if (result.HasError<NotFoundError>())
+            {
+                return NotFound();
+        }
+
+            return BadRequest(result.Errors);
         }
 
         _logger.LogInformation("Retrieved {UserCount} users successfully.", result.Value.Count);
@@ -151,8 +170,8 @@ public class UsersController : ControllerBase
     /// <response code="201">Returns the newly created user</response>
     /// <response code="400">If it fails to create the user due to validation errors</response>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post([FromBody] CreateUserDto user, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received POST request to create user: {@User}", user);
@@ -162,6 +181,7 @@ public class UsersController : ControllerBase
         if (result.IsFailed)
         {
             _logger.LogWarning("Failed to create user. Errors: {@Errors}", result.Errors);
+            
             return BadRequest(result.Errors);
         }
 
