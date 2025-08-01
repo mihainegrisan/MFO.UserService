@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
+using UserService.Domain.Errors;
 
 namespace UserService.Application.CommandsQueries.Queries;
 
@@ -27,7 +28,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<
 
         if (user is null)
         {
-            return Result.Fail("User not found");
+            return Result.Fail(new NotFoundError($"User with ID '{request.Id}' not found."));
         }
 
         var userDto = _mapper.Map<GetUserDto>(user);

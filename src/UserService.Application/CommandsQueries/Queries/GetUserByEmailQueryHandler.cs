@@ -4,6 +4,7 @@ using FluentValidation;
 using MediatR;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
+using UserService.Domain.Errors;
 
 namespace UserService.Application.CommandsQueries.Queries;
 
@@ -38,7 +39,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 
         if (user is null)
         {
-            return Result.Fail("User not found");
+            return Result.Fail(new NotFoundError($"User with Email '{request.User.Email}' not found."));
         }
 
         var userDto = _mapper.Map<GetUserDto>(user);
