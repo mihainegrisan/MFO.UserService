@@ -116,4 +116,32 @@ public class GetAllUsersQueryHandlerTests
         await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);
         _mapper.Received(2).Map<GetUserDto>(Arg.Any<User>());
     }
+
+    [Test]
+    public async Task Handle_UsersNotFound_ReturnsFailure_DoesNotCallMapper()
+    {
+        // Arrange
+        _userRepository
+            .GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None)
+            .Returns(new List<User>());
+
+        var query = new GetAllUsersQuery(1, 3);
+
+        // Act
+        var result = await _getAllUsersQueryHandler.Handle(query, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsSuccess, Is.False, "Expected success flag to be false");
+            Assert.That(result.IsFailed, Is.True, "Expected failure flag to be true");
+            Assert.That(result.ValueOrDefault, Is.Null, "Expected null Value");
+            Assert.That(result.Errors.Count, Is.EqualTo(1), "Should have exactly one error");
+            Assert.That(result.Errors[0].Message, Is.EqualTo("No users found."), "Expected error message: 'User not found'.");
+        });
+
+        await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);
+
+        _mapper.DidNotReceiveWithAnyArgs().Map<GetUserDto>(null);
+    }
 }
