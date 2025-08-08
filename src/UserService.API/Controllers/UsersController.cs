@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentResults;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Application.CommandsQueries.Commands;
 using UserService.Application.CommandsQueries.Queries;
@@ -40,7 +41,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserById(Guid id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received GET request for user with Id: {UserId}", id);
 
@@ -81,7 +82,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Post([FromBody] GetUserByEmailDto user, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserByEmail([FromBody] GetUserByEmailDto user, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received POST request to search user by Email: {UserEmail}", user.Email);
 
@@ -126,6 +127,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllUsers([FromQuery] int? pageNumber, [FromQuery] int? pageSize, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received GET request for all users.");
 
@@ -172,7 +174,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateUserDto user, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto user, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received POST request to create user: {@User}", user);
 
@@ -190,7 +192,7 @@ public class UsersController : ControllerBase
         _logger.LogInformation("User created successfully with Id: {UserId}", createdUser.Id);
 
         return CreatedAtAction(
-            nameof(Get),
+            nameof(GetUserById),
             new { id = createdUser.Id },
             createdUser
         );
