@@ -46,6 +46,21 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<bool> ToggleUserActiveStateAsync(User user, CancellationToken cancellationToken)
+    {
+        user.IsActive = !user.IsActive;
+        _db.Users.Update(user);
+        await _db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(User user, CancellationToken cancellationToken)
+    {
+        _db.Users.Remove(user);
+        await _db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     public async Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
         => await _db.Users.AnyAsync(user => user.Email == email, cancellationToken);
 }

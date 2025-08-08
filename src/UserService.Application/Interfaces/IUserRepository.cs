@@ -20,6 +20,10 @@ public interface IUserRepository
 
     Task<User> UpdateAsync(User user, CancellationToken cancellationToken);
 
+    Task<bool> ToggleUserActiveStateAsync(User user, CancellationToken cancellationToken);
+
+    Task<bool> DeleteAsync(User user, CancellationToken cancellationToken);
+
     Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken);
 
 }
