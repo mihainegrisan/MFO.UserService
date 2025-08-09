@@ -197,4 +197,48 @@ public class UsersController : ControllerBase
             createdUser
         );
     }
+
+    /// <summary>
+
+    /// <summary>
+    /// Deletes a User (hard).
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The updated User</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     DELETE api/users/3bda226a-d2fc-477f-a545-7b4dd45df670
+    ///     
+    /// </remarks>
+    /// <response code="200">Returns ok</response>
+    /// <response code="400">If it fails to delete the user due to validation errors</response>
+    /// <response code="404">If no user is found</response>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> HardDeleteUser(Guid id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received DELETE request to delete user: {UserId}", id);
+
+        var result = await _mediator.Send(new HardDeleteUserCommand(id), cancellationToken);
+
+        if (result.IsFailed)
+        {
+            _logger.LogWarning("Failed to delete user. Errors: {@Errors}", result.Errors);
+
+            if (result.HasError<NotFoundError>())
+            {
+                return NotFound(result.Errors);
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        _logger.LogInformation("User with Id: {UserId} was deleted successfully.", id);
+
+        return Ok();
+    }
 }
