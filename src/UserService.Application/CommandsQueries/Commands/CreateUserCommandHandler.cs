@@ -23,10 +23,10 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         IValidator<CreateUserDto> validator,
         IPasswordHasherService passwordHasherService)
     {
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _validator = validator ?? throw new ArgumentNullException(nameof(validator));
-        _passwordHasherService = passwordHasherService ?? throw new ArgumentNullException(nameof(passwordHasherService));
+        _userRepository = userRepository;
+        _mapper = mapper;
+        _validator = validator;
+        _passwordHasherService = passwordHasherService;
     }
 
     public async Task<Result<GetUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)

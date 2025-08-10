@@ -18,8 +18,8 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
         IUserRepository userRepository,
         IMapper mapper)
     {
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository)); ;
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); ;
+        _userRepository = userRepository;
+        _mapper = mapper;
     }
 
     public async Task<Result<IReadOnlyList<GetUserDto>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)

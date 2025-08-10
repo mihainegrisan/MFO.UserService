@@ -23,10 +23,10 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
         IValidator<UpdateUserDto> validator,
         IPasswordHasherService passwordHasherService)
     {
-        _validator = validator ?? throw new ArgumentNullException(nameof(validator));
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository)); ;
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); ;
-        _passwordHasherService = passwordHasherService ?? throw new ArgumentNullException(nameof(passwordHasherService));
+        _validator = validator;
+        _userRepository = userRepository;
+        _mapper = mapper;
+        _passwordHasherService = passwordHasherService;
     }
 
     public async Task<Result<GetUserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
