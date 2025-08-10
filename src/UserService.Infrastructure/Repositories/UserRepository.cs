@@ -46,9 +46,9 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<bool> ToggleUserActiveStateAsync(User user, CancellationToken cancellationToken)
+    public async Task<bool> SetUserActiveStateAsync(User user, bool isActive, CancellationToken cancellationToken)
     {
-        user.IsActive = !user.IsActive;
+        user.IsActive = isActive;
         _db.Users.Update(user);
         await _db.SaveChangesAsync(cancellationToken);
         return true;
