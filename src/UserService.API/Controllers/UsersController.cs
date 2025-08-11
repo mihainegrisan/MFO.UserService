@@ -205,7 +205,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns>The updated User</returns>
+    /// <returns>Nothing</returns>
     /// <remarks>
     /// Sample request:
     /// 
@@ -213,7 +213,7 @@ public class UsersController : ControllerBase
     ///     
     /// </remarks>
     /// <response code="200">Returns ok</response>
-    /// <response code="400">If it fails to delete the user due to validation errors</response>
+    /// <response code="400">If it fails to delete the user due to other errors</response>
     /// <response code="404">If no user is found</response>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -223,7 +223,7 @@ public class UsersController : ControllerBase
     {
         _logger.LogInformation("Received DELETE request to delete user: {UserId}", id);
 
-        var result = await _mediator.Send(new HardDeleteUserCommand(id), cancellationToken);
+        var result = await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
 
         if (result.IsFailed)
         {

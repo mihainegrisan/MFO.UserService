@@ -5,18 +5,18 @@ using UserService.Domain.Errors;
 
 namespace UserService.Application.CommandsQueries.Commands;
 
-public sealed record HardDeleteUserCommand(Guid Id) : IRequest<Result>;
+public sealed record DeleteUserCommand(Guid Id) : IRequest<Result>;
 
-public class HardDeleteUserCommandHandler : IRequestHandler<HardDeleteUserCommand, Result>
+public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Result>
 {
     private readonly IUserRepository _userRepository;
 
-    public HardDeleteUserCommandHandler(IUserRepository userRepository)
+    public DeleteUserCommandHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
 
-    public async Task<Result> Handle(HardDeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
