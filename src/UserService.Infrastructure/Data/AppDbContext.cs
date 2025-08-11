@@ -12,13 +12,11 @@ public class AppDbContext : DbContext
 
     }
 
-    //protected override void OnModelCreating(ModelBuilder modelBuilder)
-    //{
-    //    modelBuilder.Entity<User>().ToTable(nameof(User));
-    //}
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Hide inactive users from all queries 
+        // modelBuilder.Entity<User>().HasQueryFilter(u => u.IsActive);
+
         // Unique, non-clustered index on email
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
@@ -37,5 +35,7 @@ public class AppDbContext : DbContext
         //    .HasIndex(user => new { user.FirstName, user.LastName })
         //    .IsUnique()
         //    .HasDatabaseName("IX_User_FirstName_LastName");
+
+        // modelBuilder.Entity<User>().ToTable(nameof(User));
     }
 }
