@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Folder Include="Caching\" />
-    <Folder Include="Data\Configurations\" />
+    <Folder Include="Persistence\Configurations\" />
     <Folder Include="Logging\" />
   </ItemGroup>
 
