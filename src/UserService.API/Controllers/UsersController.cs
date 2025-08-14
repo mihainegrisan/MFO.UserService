@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using UserService.Application.CommandsQueries.Commands;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.DTOs;
@@ -123,7 +124,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns all users</response>
     /// <response code="404">If no users were found</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [OutputCache(PolicyName = CachePolicies.GetAll)]
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
