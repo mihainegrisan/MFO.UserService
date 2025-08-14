@@ -201,6 +201,50 @@ public class UsersController : ControllerBase
     /// <summary>
 
     /// <summary>
+    /// Deactivates a User (soft delete).
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The deactivated User</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     DELETE api/users/deactivate/3bda226a-d2fc-477f-a545-7b4dd45df670
+    ///     
+    /// </remarks>
+    /// <response code="200">Returns the deactivated user</response>
+    /// <response code="400">If it fails to deactivate the user due to other errors</response>
+    /// <response code="404">If no user is found</response>
+    [HttpDelete("deactivate/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeactivateUser(Guid id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received DELETE request to deactivate user: {UserId}", id);
+
+        var result = await _mediator.Send(new DeactivateUserCommand(id), cancellationToken);
+
+        if (result.IsFailed)
+        {
+            _logger.LogWarning("Failed to deactivate user. Errors: {@Errors}", result.Errors);
+
+            if (result.HasError<NotFoundError>())
+            {
+                return NotFound(result.Errors);
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        var deactivatedUser = result.Value;
+
+        _logger.LogInformation("User with Id: {UserId} was deactivated successfully.", deactivatedUser.Id);
+
+        return Ok(deactivatedUser);
+    }
+
+    /// <summary>
     /// Deletes a User (hard).
     /// </summary>
     /// <param name="id"></param>
