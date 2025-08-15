@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.OutputCaching;
 using UserService.Application.CommandsQueries.Commands;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.DTOs;
+using UserService.Application.Utilities;
 using UserService.Domain.Errors;
 
 namespace UserService.API.Controllers;
@@ -38,7 +39,7 @@ public class UsersController : ControllerBase
     /// </remarks>
     /// <response code="200">Returns the user with the corresponding id</response>
     /// <response code="404">If the user wasn't found</response>
-    [HttpGet("{Id}")]
+    [HttpGet("{Id:guid}")]
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -55,7 +56,7 @@ public class UsersController : ControllerBase
             if (result.HasError<NotFoundError>())
             {
                 return NotFound();
-        }
+            }
 
             return BadRequest(result.Errors);
         }
@@ -92,11 +93,11 @@ public class UsersController : ControllerBase
         if (result.IsFailed)
         {
             _logger.LogWarning("User with Email: {UserEmail} not found. Errors: {@Errors}", user.Email, result.Errors);
-
+            
             if (result.HasError<NotFoundError>())
             {
                 return NotFound();
-        }
+            }
 
             return BadRequest(result.Errors);
         }
@@ -142,7 +143,7 @@ public class UsersController : ControllerBase
             if (result.HasError<NotFoundError>())
             {
                 return NotFound();
-        }
+            }
 
             return BadRequest(result.Errors);
         }
@@ -200,6 +201,61 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    /// Updates a User.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="user"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The updated User</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     PUT api/users/3bda226a-d2fc-477f-a545-7b4dd45df670
+    ///     {
+    ///        "firstName": "Mihai",
+    ///        "lastName": "N",
+    ///        "email": "random1@gmail.com",
+    ///        "password": "test1234",
+    ///        "isActive": true
+    ///     }
+    /// 
+    /// </remarks>
+    /// <response code="200">Returns the updated user</response>
+    /// <response code="400">If it fails to update the user due to validation errors</response>
+    /// <response code="404">If no user is found</response>
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserDto user, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received PUT request to update user: {@User}", user);
+
+        if (id != user.Id)
+        {
+            return BadRequest("Mismatched user ID.");
+        }
+
+        var result = await _mediator.Send(new UpdateUserCommand(user), cancellationToken);
+
+        if (result.IsFailed)
+        {
+            _logger.LogWarning("Failed to update user. Errors: {@Errors}", result.Errors);
+
+            if (result.HasError<NotFoundError>()) // && result.Errors.Any(e => e.Message.Contains("User not found."))
+            {
+                return NotFound();
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        var updatedUser = result.Value;
+
+        _logger.LogInformation("User with Id: {UserId} was updated successfully.", updatedUser.Id);
+
+        return Ok(updatedUser);
+    }
 
     /// <summary>
     /// Deactivates a User (soft delete).
@@ -260,7 +316,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns ok</response>
     /// <response code="400">If it fails to delete the user due to other errors</response>
     /// <response code="404">If no user is found</response>
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
