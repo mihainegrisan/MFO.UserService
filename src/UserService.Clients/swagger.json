@@ -18,7 +18,7 @@
         ],
         "summary": "Gets a user by their unique identifier.",
         "description": "Sample request:\n            \n    GET api/users/3bda226a-d2fc-477f-a545-7b4dd45df670",
-        "operationId": "Users_Get",
+        "operationId": "Users_GetUserById",
         "parameters": [
           {
             "name": "id",
@@ -33,7 +33,27 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns the user with the corresponding id"
+            "description": "Returns the user with the corresponding id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IError"
+                  }
+                }
+              }
+            }
           },
           "404": {
             "description": "If the user wasn't found",
@@ -55,7 +75,7 @@
         ],
         "summary": "Gets a user by their email.",
         "description": "Sample request:\n            \n    POST api/users",
-        "operationId": "Users_Post",
+        "operationId": "Users_GetUserByEmail",
         "requestBody": {
           "x-name": "user",
           "content": {
@@ -70,7 +90,27 @@
         },
         "responses": {
           "200": {
-            "description": "Returns the user with the corresponding email"
+            "description": "Returns the user with the corresponding email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IError"
+                  }
+                }
+              }
+            }
           },
           "404": {
             "description": "If the user wasn't found",
@@ -90,7 +130,7 @@
         "tags": [
           "Users"
         ],
-        "operationId": "Users_GetAll",
+        "operationId": "Users_GetAllUsers",
         "parameters": [
           {
             "name": "pageNumber",
@@ -115,9 +155,29 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserDto"
+                }
+              }
+            }
           },
           "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
             "description": "",
             "content": {
               "application/json": {
@@ -135,7 +195,7 @@
         ],
         "summary": "Creates a User.",
         "description": "Sample request:\n            \n    POST api/users\n    {\n       \"firstName\": \"Mihai\",\n       \"lastName\": \"N\",\n       \"email\": \"random1@gmail.com\",\n       \"password\": \"test1234\"\n    }",
-        "operationId": "Users_Post2",
+        "operationId": "Users_CreateUser",
         "requestBody": {
           "x-name": "user",
           "content": {
@@ -150,10 +210,181 @@
         },
         "responses": {
           "201": {
-            "description": "Returns the newly created user"
+            "description": "Returns the newly created user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserDto"
+                }
+              }
+            }
           },
           "400": {
             "description": "If it fails to create the user due to validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/{id}": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Updates a User.",
+        "description": "Sample request:\n\n    PUT api/users/3bda226a-d2fc-477f-a545-7b4dd45df670\n    {\n       \"firstName\": \"Mihai\",\n       \"lastName\": \"N\",\n       \"email\": \"random1@gmail.com\",\n       \"password\": \"test1234\",\n       \"isActive\": true\n    }",
+        "operationId": "Users_UpdateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "If it fails to update the user due to validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "If no user is found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deletes a User (hard).",
+        "description": "Sample request:\n\n    DELETE api/users/3bda226a-d2fc-477f-a545-7b4dd45df670",
+        "operationId": "Users_HardDeleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ok"
+          },
+          "400": {
+            "description": "If it fails to delete the user due to other errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "If no user is found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/deactivate/{id}": {
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deactivates a User (soft delete).",
+        "description": "Sample request:\n\n    DELETE api/users/deactivate/3bda226a-d2fc-477f-a545-7b4dd45df670",
+        "operationId": "Users_DeactivateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the deactivated user"
+          },
+          "400": {
+            "description": "If it fails to deactivate the user due to other errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "If no user is found",
             "content": {
               "application/json": {
                 "schema": {
@@ -168,6 +399,54 @@
   },
   "components": {
     "schemas": {
+      "GetUserDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "fullName": {
+            "type": "string"
+          }
+        }
+      },
+      "IError": {
+        "type": "object",
+        "description": "Definition of an error",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "reasons": {
+            "type": "array",
+            "description": "Reasons of the error",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/IError"
+            }
+          }
+        }
+      },
       "ProblemDetails": {
         "type": "object",
         "additionalProperties": {
@@ -221,6 +500,31 @@
           },
           "password": {
             "type": "string"
+          }
+        }
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
           }
         }
       }
