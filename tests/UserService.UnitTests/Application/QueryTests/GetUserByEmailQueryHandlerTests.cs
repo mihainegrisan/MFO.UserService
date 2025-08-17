@@ -65,7 +65,7 @@ public class GetUserByEmailQueryHandlerTests
             .ValidateAsync(Arg.Any<GetUserByEmailDto>(), CancellationToken.None)
             .Returns(Task.FromResult(new ValidationResult()));
 
-        var query = new GetUserByEmailQuery(new GetUserByEmailDto { Email = "email@gmail.com" });
+        var query = new GetUserByEmailQuery(new GetUserByEmailDto("email@gmail.com"));
 
         // Act
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
@@ -107,7 +107,7 @@ public class GetUserByEmailQueryHandlerTests
             .ValidateAsync(Arg.Any<GetUserByEmailDto>(), CancellationToken.None)
             .Returns(Task.FromResult(new ValidationResult(failures)));
 
-        var query = new GetUserByEmailQuery(new GetUserByEmailDto { Email = "" });
+        var query = new GetUserByEmailQuery(new GetUserByEmailDto(string.Empty));
 
         // Act
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
@@ -138,7 +138,7 @@ public class GetUserByEmailQueryHandlerTests
             .GetByEmailAsync(Arg.Any<string>(), CancellationToken.None)
             .ReturnsNull();
 
-        var query = new GetUserByEmailQuery(new GetUserByEmailDto() { Email = "rand@gmail.com" });
+        var query = new GetUserByEmailQuery(new GetUserByEmailDto("rand@gmail.com"));
 
         // Act
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
