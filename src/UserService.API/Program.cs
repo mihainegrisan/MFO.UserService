@@ -1,9 +1,9 @@
-using System.Threading.RateLimiting;
 using FluentValidation;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using NSwag;
 using Serilog;
+using System.Threading.RateLimiting;
 using UserService.API.Middlewares;
 using UserService.Application.CommandsQueries.Queries;
 using UserService.Application.Interfaces;
@@ -67,8 +67,6 @@ builder.Services.AddOutputCache(options =>
     options.AddPolicy(CachePolicies.FiveMinutes, builder => builder.Expire(TimeSpan.FromMinutes(5)));
 });
 
-builder.Services.AddOpenApi();
-
 builder.Services.AddDbContext<AppDbContext>(options 
     => options.UseSqlServer(builder.Configuration.GetConnectionString("UserContext")));
 
@@ -84,6 +82,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>(Ser
 // Or you can register a specific validator like this:
 // builder.Services.AddScoped<IValidator<User>, CreateUserDtoValidator>();
 
+// TODO: Register Validation Middleware
+// builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviorMiddleware<,>));
+
+builder.Services.AddOpenApi();
 builder.Services.AddOpenApiDocument(options =>
 {
     options.PostProcess = document =>
