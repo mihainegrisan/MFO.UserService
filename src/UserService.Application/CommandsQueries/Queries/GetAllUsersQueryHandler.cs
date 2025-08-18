@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using UserService.Application.DTOs;
@@ -14,6 +13,8 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
 
+    private const int DefaultPageSize = 3;
+
     public GetAllUsersQueryHandler(
         IUserRepository userRepository,
         IMapper mapper)
@@ -24,7 +25,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
 
     public async Task<Result<IReadOnlyList<GetUserDto>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
-        var pageSize = request.PageSize.GetValueOrDefault(3);
+        var pageSize = request.PageSize.GetValueOrDefault(DefaultPageSize);
         var pageNumber = request.PageNumber.HasValue
             ? Math.Max(request.PageNumber.Value - 1, 0)
             : 0;
