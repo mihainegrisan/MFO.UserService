@@ -1,6 +1,80 @@
 @MFO.UserService.API_HostAddress = http://localhost:5072
 
-GET {{MFO.UserService.API_HostAddress}}/weatherforecast/
+// Get user by id
+GET {{MFO.UserService.API_HostAddress}}/api/users/3bda226a-d2fc-477f-a545-7b4dd45df670
 Accept: application/json
-
 ###
+
+// Get all users
+GET {{MFO.UserService.API_HostAddress}}/api/users/
+Accept: application/json
+###
+
+// Get all users paginated
+GET {{MFO.UserService.API_HostAddress}}/api/users?pageNumber=1&pageSize=5
+Accept: application/json
+###
+
+// Get user by email
+POST {{MFO.UserService.API_HostAddress}}/api/users/search
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+    "email": "random1@gmail.com"
+}
+###
+
+// Password error
+POST {{MFO.UserService.API_HostAddress}}/api/users
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+    "firstName": "Mihai",
+    "lastName": "N",
+    "email": "random1@gmail.com",
+    "password": "test"
+}
+###
+
+// Email error
+POST {{MFO.UserService.API_HostAddress}}/api/users
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+    "firstName": "Mihai",
+    "lastName": "N",
+    "email": "random0@gmail.com",
+    "password": "test1234"
+}
+###
+
+// Multiple errors
+POST {{MFO.UserService.API_HostAddress}}/api/users
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+    "firstName": "Mihai"
+}
+###
+
+// Update user
+PUT {{MFO.UserService.API_HostAddress}}/api/users/3bda226a-d2fc-477f-a545-7b4dd45df670
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+    "id": "3bda226a-d2fc-477f-a545-7b4dd45df670",
+    "firstName": "M",
+    "lastName": "N",
+    "email": "random0@gmail.com",
+    "password": "test1234",
+    "isActive": true
+}
+###
+
+// Delete user
+DELETE {{MFO.UserService.API_HostAddress}}/api/users/3bda226a-d2fc-477f-a545-7b4dd45df670
