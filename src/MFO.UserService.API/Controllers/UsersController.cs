@@ -118,7 +118,7 @@ public class UsersController : ControllerBase
     /// Sample request:
     /// 
     ///     GET api/users
-    ///     GET api/users?page=2
+    ///     GET api/users?pageNumber=2
     ///     GET api/users?pageNumber=2&pageSize=10
     /// 
     /// </remarks>
