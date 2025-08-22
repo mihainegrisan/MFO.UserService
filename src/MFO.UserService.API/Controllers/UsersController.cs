@@ -39,7 +39,7 @@ public class UsersController : ControllerBase
     /// </remarks>
     /// <response code="200">Returns the user with the corresponding id</response>
     /// <response code="404">If the user wasn't found</response>
-    [HttpGet("{Id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

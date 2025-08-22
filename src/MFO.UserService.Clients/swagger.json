@@ -11,7 +11,7 @@
     "version": "v1"
   },
   "paths": {
-    "/api/Users/{Id}": {
+    "/api/Users/{id}": {
       "get": {
         "tags": [
           "Users"
@@ -57,6 +57,118 @@
           },
           "404": {
             "description": "If the user wasn't found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Updates a User.",
+        "description": "Sample request:\n\n    PUT api/users/3bda226a-d2fc-477f-a545-7b4dd45df670\n    {\n       \"firstName\": \"Mihai\",\n       \"lastName\": \"N\",\n       \"email\": \"random1@gmail.com\",\n       \"password\": \"test1234\",\n       \"isActive\": true\n    }",
+        "operationId": "Users_UpdateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "If it fails to update the user due to validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "If no user is found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deletes a User (hard).",
+        "description": "Sample request:\n\n    DELETE api/users/3bda226a-d2fc-477f-a545-7b4dd45df670",
+        "operationId": "Users_HardDeleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ok"
+          },
+          "400": {
+            "description": "If it fails to delete the user due to other errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "If no user is found",
             "content": {
               "application/json": {
                 "schema": {
@@ -228,120 +340,6 @@
                   "items": {
                     "$ref": "#/components/schemas/IError"
                   }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Users/{id}": {
-      "put": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Updates a User.",
-        "description": "Sample request:\n\n    PUT api/users/3bda226a-d2fc-477f-a545-7b4dd45df670\n    {\n       \"firstName\": \"Mihai\",\n       \"lastName\": \"N\",\n       \"email\": \"random1@gmail.com\",\n       \"password\": \"test1234\",\n       \"isActive\": true\n    }",
-        "operationId": "Users_UpdateUser",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "user",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserDto"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "Returns the updated user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetUserDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "If it fails to update the user due to validation errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/IError"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "If no user is found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Deletes a User (hard).",
-        "description": "Sample request:\n\n    DELETE api/users/3bda226a-d2fc-477f-a545-7b4dd45df670",
-        "operationId": "Users_HardDeleteUser",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns ok"
-          },
-          "400": {
-            "description": "If it fails to delete the user due to other errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "If no user is found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
