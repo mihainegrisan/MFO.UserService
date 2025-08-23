@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using MFO.Contracts.User;
+using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Domain.Errors;
 

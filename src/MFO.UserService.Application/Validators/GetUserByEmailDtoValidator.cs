@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using MFO.UserService.Application.DTOs;
+using MFO.Contracts.User.DTOs;
 
 namespace MFO.UserService.Application.Validators;
 

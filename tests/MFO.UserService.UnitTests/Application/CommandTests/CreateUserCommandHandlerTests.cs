@@ -2,7 +2,7 @@
 using FluentValidation;
 using NSubstitute;
 using MFO.UserService.Application.CommandsQueries.Commands;
-using MFO.UserService.Application.DTOs;
+using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
 
 namespace MFO.UserService.UnitTests.Application.CommandTests;
