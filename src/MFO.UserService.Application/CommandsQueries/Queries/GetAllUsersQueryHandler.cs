@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using MFO.UserService.Application.DTOs;
+using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
 
 namespace MFO.UserService.Application.CommandsQueries.Queries;

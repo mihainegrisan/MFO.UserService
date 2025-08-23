@@ -2,7 +2,7 @@
 using NSubstitute;
 using System.Globalization;
 using MFO.UserService.Application.CommandsQueries.Queries;
-using MFO.UserService.Application.DTOs;
+using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Domain.Entities;
 

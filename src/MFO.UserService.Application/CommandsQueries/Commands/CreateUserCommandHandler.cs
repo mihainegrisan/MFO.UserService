@@ -2,7 +2,7 @@
 using FluentResults;
 using FluentValidation;
 using MediatR;
-using MFO.UserService.Application.DTOs;
+using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Domain.Entities;
 

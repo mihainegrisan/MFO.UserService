@@ -13,6 +13,6 @@ public class UserServiceProfile : Profile
         // Define your mappings here
         // CreateMap<SourceType, DestinationType>();
 
-        CreateMap<Domain.Entities.User, MFO.Contracts.User.GetUserDto>();
+        CreateMap<MFO.UserService.Domain.Entities.User, MFO.Contracts.User.DTOs.GetUserDto>();
     }
 }

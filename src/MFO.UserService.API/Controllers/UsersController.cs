@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using MFO.UserService.Application.CommandsQueries.Commands;
 using MFO.UserService.Application.CommandsQueries.Queries;
-using MFO.UserService.Application.DTOs;
+using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Utilities;
 using MFO.UserService.Domain.Errors;
 
