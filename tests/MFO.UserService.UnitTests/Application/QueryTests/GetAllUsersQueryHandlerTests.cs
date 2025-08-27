@@ -35,21 +35,21 @@ public class GetAllUsersQueryHandlerTests
         {
             new()
             {
-                Id = guid1,
                 FirstName = "Bob",
                 LastName = "Tall",
-                CreatedAt = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
                 IsActive = true,
-                Email = "bob@gmail.com"
+                Email = "bob@gmail.com",
+                PasswordHash = null,
+                CreatedDate = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
             },
             new()
             {
                 Id = guid2,
                 FirstName = "Colt",
                 LastName = "Small",
-                CreatedAt = DateTime.ParseExact("05-02-2024", "dd-MM-yyyy", CultureInfo.InvariantCulture),
                 IsActive = true,
-                Email = "colt@gmail.com"
+                Email = "colt@gmail.com",
+                CreatedDate = DateTime.ParseExact("05-02-2024", "dd-MM-yyyy", CultureInfo.InvariantCulture),
             }
         };
 
@@ -60,18 +60,18 @@ public class GetAllUsersQueryHandlerTests
                 Id = new Guid("e005a010-c116-42cf-ac78-01b8290d2bbb"),
                 FirstName = "Bob",
                 LastName = "Tall",
-                CreatedAt = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
                 IsActive = true,
-                Email = "bob@gmail.com"
+                Email = "bob@gmail.com",
+                CreatedAt = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
             },
             new()
             {
                 Id = new Guid("e005a010-c116-42cf-ac78-01b8290d2aaa"),
                 FirstName = "Colt",
                 LastName = "Small",
-                CreatedAt = DateTime.ParseExact("05-02-2024", "dd-MM-yyyy", CultureInfo.InvariantCulture),
                 IsActive = true,
-                Email = "colt@gmail.com"
+                Email = "colt@gmail.com",
+                CreatedAt = DateTime.ParseExact("05-02-2024", "dd-MM-yyyy", CultureInfo.InvariantCulture),
             }
         };
 
@@ -103,14 +103,14 @@ public class GetAllUsersQueryHandlerTests
             Assert.That(dto1.Email, Is.EqualTo("bob@gmail.com"), "Email should match");
             Assert.That(dto1.FirstName, Is.EqualTo("Bob"), "FirstName should match");
             Assert.That(dto1.LastName, Is.EqualTo("Tall"), "LastName should match");
-            Assert.That(dto1.CreatedAt, Is.EqualTo(users[0].CreatedAt).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
+            Assert.That(dto1.CreatedAt, Is.EqualTo(users[0].CreatedDate).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
 
             var dto2 = result.Value[1];
             Assert.That(dto2.Id, Is.EqualTo(guid2), "Id should match");
             Assert.That(dto2.Email, Is.EqualTo("colt@gmail.com"), "Email should match");
             Assert.That(dto2.FirstName, Is.EqualTo("Colt"), "FirstName should match");
             Assert.That(dto2.LastName, Is.EqualTo("Small"), "LastName should match");
-            Assert.That(dto2.CreatedAt, Is.EqualTo(users[1].CreatedAt).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
+            Assert.That(dto2.CreatedAt, Is.EqualTo(users[1].CreatedDate).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
         });
 
         await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);

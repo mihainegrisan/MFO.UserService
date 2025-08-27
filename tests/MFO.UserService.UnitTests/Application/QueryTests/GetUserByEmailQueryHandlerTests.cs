@@ -39,18 +39,18 @@ public class GetUserByEmailQueryHandlerTests
             Id = guid,
             FirstName = "Bob",
             LastName = "Tall",
-            CreatedAt = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
             IsActive = true,
-            Email = "email@gmail.com"
+            Email = "email@gmail.com",
+            CreatedDate = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
         };
         var getUserDto = new GetUserDto()
         {
             Id = guid,
             FirstName = "Bob",
             LastName = "Tall",
-            CreatedAt = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
             IsActive = true,
-            Email = "email@gmail.com"
+            Email = "email@gmail.com",
+            CreatedAt = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
         };
 
         _userRepository
@@ -82,7 +82,7 @@ public class GetUserByEmailQueryHandlerTests
             Assert.That(dto.Email, Is.EqualTo("email@gmail.com"), "Email should match");
             Assert.That(dto.FirstName, Is.EqualTo("Bob"), "FirstName should match");
             Assert.That(dto.LastName, Is.EqualTo("Tall"), "LastName should match");
-            Assert.That(dto.CreatedAt, Is.EqualTo(user.CreatedAt).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
+            Assert.That(dto.CreatedAt, Is.EqualTo(user.CreatedDate).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
             Assert.That(dto.IsActive, Is.True);
         });
 
