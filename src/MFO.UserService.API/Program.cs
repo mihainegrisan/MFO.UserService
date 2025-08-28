@@ -1,19 +1,19 @@
 using FluentValidation;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
-using NSwag;
-using Serilog;
-using System.Threading.RateLimiting;
 using MFO.UserService.API.Middlewares;
 using MFO.UserService.Application.CommandsQueries.Queries;
 using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Application.Mapping;
 using MFO.UserService.Application.Utilities;
-using MFO.UserService.Application.Validators;
+using MFO.UserService.Application.Validators.Commands;
 using MFO.UserService.Infrastructure.Data;
 using MFO.UserService.Infrastructure.Repositories;
 using MFO.UserService.Infrastructure.Services;
 using MFO.UserService.Infrastructure.Utilities;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using NSwag;
+using Serilog;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,7 +78,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUs
 
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile(new UserServiceProfile()));
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>(ServiceLifetime.Transient);
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>(ServiceLifetime.Transient);
 // Or you can register a specific validator like this:
 // builder.Services.AddScoped<IValidator<User>, CreateUserDtoValidator>();
 
