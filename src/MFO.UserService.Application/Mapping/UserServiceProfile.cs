@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MFO.Contracts.User.DTOs;
+using MFO.UserService.Domain.Entities;
 
 namespace MFO.UserService.Application.Mapping;
 
@@ -13,6 +15,10 @@ public class UserServiceProfile : Profile
         // Define your mappings here
         // CreateMap<SourceType, DestinationType>();
 
-        CreateMap<MFO.UserService.Domain.Entities.User, MFO.Contracts.User.DTOs.GetUserDto>();
+        // Entity → DTO
+        CreateMap<User, GetUserDto>();
+
+        // DTO → Entity(for create / update)
+        CreateMap<CreateUserDto, User>();
     }
 }

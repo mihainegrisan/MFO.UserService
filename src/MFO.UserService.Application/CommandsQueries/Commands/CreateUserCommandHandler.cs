@@ -45,16 +45,15 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             return Result.Fail($"User with email '{request.User.Email}' already exists.");
         }
 
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            FirstName = request.User.FirstName,
-            LastName = request.User.LastName,
-            Email = request.User.Email,
-            PasswordHash = _passwordHasherService.HashPassword(request.User.Password),
-            CreatedAt = DateTime.UtcNow,
-            IsActive = true
-        };
+        var user = _mapper.Map<User>(request.User);
+        user.Id = Guid.NewGuid();
+        user.PasswordHash = _passwordHasherService.HashPassword(request.User.Password);
+        user.IsActive = true;
+        user.CreatedBy = "system";
+        user.CreatedDate = DateTime.UtcNow;
+        user.LastModifiedBy = "system";
+        user.LastModifiedDate = DateTime.UtcNow;
+       
 
         await _userRepository.AddAsync(user, cancellationToken);
 
