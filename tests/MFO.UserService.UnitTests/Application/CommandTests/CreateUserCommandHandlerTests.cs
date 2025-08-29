@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using NSubstitute;
 using MFO.UserService.Application.CommandsQueries.Commands;
-using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
+using NSubstitute;
 
 namespace MFO.UserService.UnitTests.Application.CommandTests;
 
@@ -12,7 +11,7 @@ public class CreateUserCommandHandlerTests
 {
     private IUserRepository _userRepository;
     private IMapper _mapper;
-    private IValidator<CreateUserDto> _validator;
+    private IValidator<CreateUserCommand> _validator;
     private IPasswordHasherService _passwordHasherService;
     private CreateUserCommandHandler _createUserCommandHandler;
 
@@ -21,7 +20,7 @@ public class CreateUserCommandHandlerTests
     {
         _userRepository = Substitute.For<IUserRepository>();
         _mapper = Substitute.For<IMapper>();
-        _validator = Substitute.For<IValidator<CreateUserDto>>();
+        _validator = Substitute.For<IValidator<CreateUserCommand>>();
         _passwordHasherService = Substitute.For<IPasswordHasherService>();
         _createUserCommandHandler = new CreateUserCommandHandler(_userRepository, _mapper, _validator, _passwordHasherService);
     }
