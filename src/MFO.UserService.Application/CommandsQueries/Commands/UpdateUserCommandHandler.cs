@@ -14,13 +14,13 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly IValidator<UpdateUserDto> _validator;
+    private readonly IValidator<UpdateUserCommand> _validator;
     private readonly IPasswordHasherService _passwordHasherService;
 
     public UpdateUserCommandHandler(
         IUserRepository userRepository,
         IMapper mapper,
-        IValidator<UpdateUserDto> validator,
+        IValidator<UpdateUserCommand> validator,
         IPasswordHasherService passwordHasherService)
     {
         _validator = validator;
@@ -31,7 +31,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
 
     public async Task<Result<GetUserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request.User, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Result.Fail(validationResult.Errors.Select(vf => vf.ErrorMessage));

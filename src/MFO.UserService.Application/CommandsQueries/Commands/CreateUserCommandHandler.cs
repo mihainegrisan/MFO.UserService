@@ -14,13 +14,13 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly IValidator<CreateUserDto> _validator;
+    private readonly IValidator<CreateUserCommand> _validator;
     private readonly IPasswordHasherService _passwordHasherService;
 
     public CreateUserCommandHandler(
         IUserRepository userRepository,
         IMapper mapper,
-        IValidator<CreateUserDto> validator,
+        IValidator<CreateUserCommand> validator,
         IPasswordHasherService passwordHasherService)
     {
         _userRepository = userRepository;
@@ -31,7 +31,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 
     public async Task<Result<GetUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request.User, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         
         if (!validationResult.IsValid)
         {

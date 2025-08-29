@@ -14,12 +14,12 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly IValidator<GetUserByEmailDto> _validator;
+    private readonly IValidator<GetUserByEmailQuery> _validator;
 
     public GetUserByEmailQueryHandler(
         IUserRepository userRepository,
         IMapper mapper,
-        IValidator<GetUserByEmailDto> validator)
+        IValidator<GetUserByEmailQuery> validator)
     {
         _userRepository = userRepository;
         _mapper = mapper;
@@ -28,7 +28,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 
     public async Task<Result<GetUserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request.User, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
