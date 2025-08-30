@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MFO.UserService.Domain.Entities;
+﻿using MFO.UserService.Domain.Entities;
 using MFO.UserService.Infrastructure.Data;
 
 namespace MFO.UserService.Infrastructure.Utilities;
@@ -21,7 +16,7 @@ public class DbInitializer
         {
             new()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.CreateVersion7(),
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "JohnDoe@gmail.com",

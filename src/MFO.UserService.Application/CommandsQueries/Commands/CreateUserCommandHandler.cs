@@ -46,7 +46,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         }
 
         var user = _mapper.Map<User>(request.User);
-        user.Id = Guid.NewGuid();
+        user.Id = Guid.CreateVersion7();
         user.PasswordHash = _passwordHasherService.HashPassword(request.User.Password);
         user.IsActive = true;
         user.CreatedBy = "system";
