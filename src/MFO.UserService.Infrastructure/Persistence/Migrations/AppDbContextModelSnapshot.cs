@@ -62,7 +62,7 @@ namespace MFO.UserService.Infrastructure.Migrations
                         .HasDatabaseName("IX_User_Email_Active")
                         .HasFilter("[IsActive] = 1");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 #pragma warning restore 612, 618
         }
