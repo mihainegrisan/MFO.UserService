@@ -53,7 +53,7 @@ public class GetAllUsersQueryHandlerTests
             }
         };
 
-        var getUserDtos = new List<GetUserDto>
+        var getUsersDto = new List<GetUserDto>
         {
             new()
             {
@@ -80,10 +80,10 @@ public class GetAllUsersQueryHandlerTests
             .Returns(Task.FromResult(users));
         _mapper
             .Map<GetUserDto>(users[0])
-            .Returns(getUserDtos[0]);
+            .Returns(getUsersDto[0]);
         _mapper
             .Map<GetUserDto>(users[1])
-            .Returns(getUserDtos[1]);
+            .Returns(getUsersDto[1]);
 
         var query = new GetAllUsersQuery(1, 2);
 
@@ -118,7 +118,7 @@ public class GetAllUsersQueryHandlerTests
     }
 
     [Test]
-    public async Task Handle_UsersNotFound_ReturnsFailure_DoesNotCallMapper()
+    public async Task Handle_NoUsersFound_ReturnsEmptyList_DoesNotCallMapper()
     {
         // Arrange
         _userRepository
@@ -133,11 +133,9 @@ public class GetAllUsersQueryHandlerTests
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.False, "Expected success flag to be false");
-            Assert.That(result.IsFailed, Is.True, "Expected failure flag to be true");
-            Assert.That(result.ValueOrDefault, Is.Null, "Expected null Value");
-            Assert.That(result.Errors.Count, Is.EqualTo(1), "Should have exactly one error");
-            Assert.That(result.Errors[0].Message, Is.EqualTo("No users found."), "Expected error message: 'User not found'.");
+            Assert.That(result.IsSuccess, Is.True, "Expected success flag to be true");
+            Assert.That(result.IsFailed, Is.False, "Expected failure flag to be false");
+            Assert.That(result.ValueOrDefault, Is.Empty, "Expected null Value");
         });
 
         await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);

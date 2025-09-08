@@ -1,4 +1,5 @@
 using FluentValidation;
+using MediatR;
 using MFO.UserService.API.Middlewares;
 using MFO.UserService.Application.CommandsQueries.Queries;
 using MFO.UserService.Application.Interfaces;
