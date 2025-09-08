@@ -123,12 +123,10 @@ public class UsersController : ControllerBase
     /// 
     /// </remarks>
     /// <response code="200">Returns all users</response>
-    /// <response code="404">If no users were found</response>
     [HttpGet]
     [OutputCache(PolicyName = CachePolicies.GetAll)]
     [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllUsers([FromQuery] int? pageNumber, [FromQuery] int? pageSize, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received GET request for all users.");
@@ -139,11 +137,6 @@ public class UsersController : ControllerBase
         if (result.IsFailed)
         {
             _logger.LogWarning("Failed to retrieve users. Errors: {@Errors}", result.Errors);
-            
-            if (result.HasError<NotFoundError>())
-            {
-                return NotFound();
-            }
 
             return BadRequest(result.Errors);
         }
