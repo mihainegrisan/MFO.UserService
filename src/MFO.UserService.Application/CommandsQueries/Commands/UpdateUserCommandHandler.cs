@@ -4,6 +4,7 @@ using FluentValidation;
 using MediatR;
 using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
+using MFO.UserService.Domain.Entities;
 using MFO.UserService.Domain.Errors;
 
 namespace MFO.UserService.Application.CommandsQueries.Commands;
@@ -48,6 +49,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
         existingUser.Email = request.User.Email;
         existingUser.PasswordHash = _passwordHasherService.HashPassword(request.User.Password);
         existingUser.IsActive = request.User.IsActive;
+        existingUser.LastModifiedBy = "system";
+        existingUser.LastModifiedDate = DateTime.UtcNow;
 
         var updatedUser = await _userRepository.UpdateAsync(existingUser, cancellationToken);
 

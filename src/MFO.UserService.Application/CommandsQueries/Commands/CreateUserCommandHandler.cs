@@ -53,8 +53,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         user.CreatedDate = DateTime.UtcNow;
         user.LastModifiedBy = "system";
         user.LastModifiedDate = DateTime.UtcNow;
-       
-
+        
         await _userRepository.AddAsync(user, cancellationToken);
 
         var userDto = _mapper.Map<GetUserDto>(user);

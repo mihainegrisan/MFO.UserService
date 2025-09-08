@@ -32,9 +32,9 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
         
         var users = await _userRepository.GetAllAsync(pageNumber, pageSize, cancellationToken);
 
-        if (!users.Any())
+        if (users.Count is 0)
         {
-            return Result.Fail("No users found.");
+            return Result.Ok<IReadOnlyList<GetUserDto>>(new List<GetUserDto>());
         }
         
         var usersDto = users
