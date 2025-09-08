@@ -24,11 +24,11 @@ public class AppDbContext : DbContext
             .HasDatabaseName("IX_User_Email");
 
         // Filtered unique index for active users
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Email)
-            .IsUnique()
-            .HasFilter("[IsActive] = 1")
-            .HasDatabaseName("IX_User_Email_Active");
+        //modelBuilder.Entity<User>()
+        //    .HasIndex(u => u.Email)
+        //    .IsUnique()
+        //    .HasFilter("[IsActive] = 1")
+        //    .HasDatabaseName("IX_User_Email_Active");
 
         // Composite index
         //modelBuilder.Entity<User>()
