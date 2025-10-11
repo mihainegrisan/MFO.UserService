@@ -14,7 +14,6 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly IValidator<GetUserByEmailQuery> _validator;
 
     public GetUserByEmailQueryHandler(
         IUserRepository userRepository,
@@ -23,20 +22,11 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
     {
         _userRepository = userRepository;
         _mapper = mapper;
-        _validator = validator;
     }
 
     public async Task<Result<GetUserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return Result.Fail(validationResult.Errors.Select(vf => vf.ErrorMessage));
-        }
-
         var user = await _userRepository.GetByEmailAsync(request.User.Email, cancellationToken);
-
         if (user is null)
         {
             return Result.Fail(new NotFoundError($"User with Email '{request.User.Email}' not found."));

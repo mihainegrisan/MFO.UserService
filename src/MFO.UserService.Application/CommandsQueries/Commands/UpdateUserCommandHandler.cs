@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using FluentResults;
-using FluentValidation;
 using MediatR;
 using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
-using MFO.UserService.Domain.Entities;
 using MFO.UserService.Domain.Errors;
 
 namespace MFO.UserService.Application.CommandsQueries.Commands;
@@ -15,16 +13,13 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly IValidator<UpdateUserCommand> _validator;
     private readonly IPasswordHasherService _passwordHasherService;
 
     public UpdateUserCommandHandler(
         IUserRepository userRepository,
         IMapper mapper,
-        IValidator<UpdateUserCommand> validator,
         IPasswordHasherService passwordHasherService)
     {
-        _validator = validator;
         _userRepository = userRepository;
         _mapper = mapper;
         _passwordHasherService = passwordHasherService;
@@ -32,12 +27,6 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
 
     public async Task<Result<GetUserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return Result.Fail(validationResult.Errors.Select(vf => vf.ErrorMessage));
-        }
-
         var existingUser = await _userRepository.GetByIdAsync(request.User.Id, cancellationToken);
         if (existingUser is null)
         {

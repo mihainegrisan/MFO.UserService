@@ -23,14 +23,12 @@ public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserComman
     public async Task<Result<GetUserDto>> Handle(DeactivateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
-
         if (user is null)
         {
             return Result.Fail<GetUserDto>(new NotFoundError($"User with ID '{request.Id}' not found."));
         }
 
         var deactivated = await _userRepository.SetUserActiveStateAsync(user, false, cancellationToken);
-
         if (!deactivated)
         {
             return Result.Fail($"Failed to deactivate user with ID '{request.Id}'.");
