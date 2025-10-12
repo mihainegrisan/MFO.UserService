@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MFO.UserService.Domain.Entities;
 
-namespace MFO.UserService.Infrastructure.Data;
+namespace MFO.UserService.Infrastructure.Persistence;
 
 public class AppDbContext : DbContext
 {
