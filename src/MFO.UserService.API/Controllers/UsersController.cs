@@ -21,8 +21,8 @@ public class UsersController : ControllerBase
         ILogger<UsersController> logger,
         IMediator mediator)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -51,12 +51,14 @@ public class UsersController : ControllerBase
 
         if (result.IsFailed)
         {
-            _logger.LogWarning("User with Id: {UserId} not found. Errors: {@Errors}", id, result.Errors);
-
             if (result.HasError<NotFoundError>())
             {
+                _logger.LogInformation("User with Id: {UserId} not found.", id);
+
                 return NotFound();
             }
+            
+            _logger.LogWarning("Failed to retrieve user with Id: {UserId}. Errors: {@Errors}", id, result.Errors);
 
             return BadRequest(result.Errors);
         }
@@ -92,12 +94,14 @@ public class UsersController : ControllerBase
 
         if (result.IsFailed)
         {
-            _logger.LogWarning("User with Email: {UserEmail} not found. Errors: {@Errors}", user.Email, result.Errors);
-            
             if (result.HasError<NotFoundError>())
             {
+                _logger.LogInformation("User with Id: {UserEmail} not found.", user.Email);
+
                 return NotFound();
             }
+            
+            _logger.LogWarning("Failed to retrieve user with Email: {UserEmail}. Errors: {@Errors}", user.Email, result.Errors);
 
             return BadRequest(result.Errors);
         }

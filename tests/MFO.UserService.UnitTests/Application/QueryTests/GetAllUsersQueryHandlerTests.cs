@@ -91,7 +91,7 @@ public class GetAllUsersQueryHandlerTests
         var result = await _getAllUsersQueryHandler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True, "Expected success flag to be true");
             Assert.That(result.IsFailed, Is.False, "Expected failure flag to be false");
@@ -111,7 +111,7 @@ public class GetAllUsersQueryHandlerTests
             Assert.That(dto2.FirstName, Is.EqualTo("Colt"), "FirstName should match");
             Assert.That(dto2.LastName, Is.EqualTo("Small"), "LastName should match");
             Assert.That(dto2.CreatedAt, Is.EqualTo(users[1].CreatedDate).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
-        });
+        }
 
         await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);
         _mapper.Received(2).Map<GetUserDto>(Arg.Any<User>());
@@ -131,12 +131,12 @@ public class GetAllUsersQueryHandlerTests
         var result = await _getAllUsersQueryHandler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True, "Expected success flag to be true");
             Assert.That(result.IsFailed, Is.False, "Expected failure flag to be false");
             Assert.That(result.ValueOrDefault, Is.Empty, "Expected null Value");
-        });
+        }
 
         await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);
 

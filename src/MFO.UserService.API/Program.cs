@@ -83,8 +83,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>
 // Or you can register a specific validator like this:
 // builder.Services.AddScoped<IValidator<User>, CreateUserDtoValidator>();
 
-// TODO: Register Validation Middleware
-// builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviorMiddleware<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviorMiddleware<,>));
 
 builder.Services.AddOpenApi();
 builder.Services.AddOpenApiDocument(options =>

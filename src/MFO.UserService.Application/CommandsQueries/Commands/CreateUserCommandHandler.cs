@@ -14,7 +14,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly IValidator<CreateUserCommand> _validator;
     private readonly IPasswordHasherService _passwordHasherService;
 
     public CreateUserCommandHandler(
@@ -25,21 +24,12 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
     {
         _userRepository = userRepository;
         _mapper = mapper;
-        _validator = validator;
         _passwordHasherService = passwordHasherService;
     }
 
     public async Task<Result<GetUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-        
-        if (!validationResult.IsValid)
-        {
-            return Result.Fail(validationResult.Errors.Select(vf => vf.ErrorMessage));
-        }
-
         var userExists = await _userRepository.ExistsByEmailAsync(request.User.Email, cancellationToken);
-
         if (userExists)
         {
             return Result.Fail($"User with email '{request.User.Email}' already exists.");
