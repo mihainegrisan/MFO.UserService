@@ -22,7 +22,7 @@ public class UpdateUserCommandHandlerTests
         _mapper = Substitute.For<IMapper>();
         _validator = Substitute.For<IValidator<UpdateUserCommand>>();
         _passwordHasherService = Substitute.For<IPasswordHasherService>();
-        _updateUserCommandHandler = new UpdateUserCommandHandler(_userRepository, _mapper, _validator, _passwordHasherService);
+        _updateUserCommandHandler = new UpdateUserCommandHandler(_userRepository, _mapper, _passwordHasherService);
     }
 
     [Test]

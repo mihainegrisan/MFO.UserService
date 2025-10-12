@@ -71,7 +71,7 @@ public class GetUserByEmailQueryHandlerTests
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True, "Expected success flag to be true");
             Assert.That(result.IsFailed, Is.False, "Expected failure flag to be false");
@@ -84,7 +84,7 @@ public class GetUserByEmailQueryHandlerTests
             Assert.That(dto.LastName, Is.EqualTo("Tall"), "LastName should match");
             Assert.That(dto.CreatedAt, Is.EqualTo(user.CreatedDate).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
             Assert.That(dto.IsActive, Is.True);
-        });
+        }
 
         await _validator.Received(1).ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None);
         await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
@@ -113,14 +113,14 @@ public class GetUserByEmailQueryHandlerTests
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsFailed, Is.True, "Expected failure flag to be true");
             Assert.That(result.IsSuccess, Is.False, "Expected success flag to be false");
             Assert.That(result.ValueOrDefault, Is.Null, "Expected null Value");
             Assert.That(result.Errors.Count, Is.EqualTo(1), "Should have exactly one error");
             Assert.That(result.Errors[0].Message, Is.EqualTo(errorMessage), $"Expected error message: '{errorMessage}'");
-        });
+        }
 
         await _validator.Received(1).ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None);
         await _userRepository.DidNotReceive().GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
@@ -144,7 +144,7 @@ public class GetUserByEmailQueryHandlerTests
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.Not.Null, "Expected non-null result");
             Assert.That(result.IsFailed, Is.True, "Expected failure flag to be true");
@@ -152,7 +152,7 @@ public class GetUserByEmailQueryHandlerTests
             Assert.That(result.ValueOrDefault, Is.Null, "Expected null Value");
             Assert.That(result.Errors.Count, Is.EqualTo(1), "Should have exactly one error");
             Assert.That(result.Errors[0].Message, Is.EqualTo("User not found"), "Expected error message: 'User not found'.");
-        });
+        }
 
         await _validator.Received(1).ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None);
         await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
