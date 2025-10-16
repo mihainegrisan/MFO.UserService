@@ -41,6 +41,9 @@ jobs:
       - name: Restore .NET tools
         run: dotnet tool restore
 
+      - name: Verify nswag.json exists
+        run: ls -la src/MFO.UserService.Clients/nswag.json
+
       - name: Build
         run: dotnet build MFO.UserService.sln --no-restore --configuration Release
 
