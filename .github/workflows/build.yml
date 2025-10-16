@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0"
+
+      - name: Authenticate to GitHub Packages
+        run: |
+          # Remove old/incorrect source if exists
+          dotnet nuget remove source github || echo "No existing feed"
+          
+          # Add correct feed with PAT
+          dotnet nuget add source "https://nuget.pkg.github.com/mihainegrisan/index.json" \
+            --name github \
+            --username ${{ github.repository_owner }} \
+            --password ${{ secrets.NUGET_PUBLISH_TOKEN  }} \
+            --store-password-in-clear-text \
+            --valid-authentication-types basic
+
+      - name: List NuGet sources
+        run: dotnet nuget list source
+
+      - name: Restore dependencies
+        run: dotnet restore MFO.UserService.sln
+
+      - name: Build
+        run: dotnet build MFO.UserService.sln --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test MFO.UserService.sln --no-build --configuration Release --verbosity normal
