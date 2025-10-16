@@ -6,7 +6,6 @@ using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Application.Mapping;
 using MFO.UserService.Application.Utilities;
 using MFO.UserService.Application.Validators.Commands;
-using MFO.UserService.Infrastructure.Data;
 using MFO.UserService.Infrastructure.Repositories;
 using MFO.UserService.Infrastructure.Services;
 using MFO.UserService.Infrastructure.Utilities;
@@ -15,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using NSwag;
 using Serilog;
 using System.Threading.RateLimiting;
+using MFO.UserService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 

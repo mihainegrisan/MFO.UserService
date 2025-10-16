@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Domain.Entities;
-using MFO.UserService.Infrastructure.Data;
+using MFO.UserService.Infrastructure.Persistence;
 
 namespace MFO.UserService.Infrastructure.Repositories;
 
