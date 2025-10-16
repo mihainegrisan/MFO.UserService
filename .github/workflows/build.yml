@@ -38,6 +38,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore MFO.UserService.sln
 
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
       - name: Build
         run: dotnet build MFO.UserService.sln --no-restore --configuration Release
 
