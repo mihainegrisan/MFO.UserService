@@ -41,6 +41,14 @@ jobs:
       - name: Restore .NET tools
         run: dotnet tool restore
 
+      - name: Debug - List files
+        run: find src/MFO.UserService.Clients -type f
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+
       - name: Verify nswag.json exists
         run: ls -la src/MFO.UserService.Clients/nswag.json
 
