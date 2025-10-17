@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <Target Name="NSwag" AfterTargets="Build">
-    <Exec Command="dotnet tool run nswag run nswag.json /variables:Configuration=$(Configuration)" WorkingDirectory="$(MSBuildThisFileDirectory)" />
+    <Exec Command="dotnet tool run nswag run NSwag.json /variables:Configuration=$(Configuration)" WorkingDirectory="$(MSBuildThisFileDirectory)" />
   </Target>
 
   <ItemGroup>
