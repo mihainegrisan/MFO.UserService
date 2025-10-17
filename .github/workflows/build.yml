@@ -44,11 +44,6 @@ jobs:
       - name: Debug - List files
         run: find src/MFO.UserService.Clients -type f
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-            fetch-depth: 0
-
       - name: What files exist in MFO.UserService.Clients
         run: ls -la src/MFO.UserService.Clients/
 
