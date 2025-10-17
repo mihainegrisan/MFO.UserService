@@ -49,8 +49,8 @@ jobs:
         with:
             fetch-depth: 0
 
-      - name: Verify nswag.json exists
-        run: ls -la src/MFO.UserService.Clients/nswag.json
+      - name: What files exist in MFO.UserService.Clients
+        run: ls -la src/MFO.UserService.Clients/
 
       - name: Build
         run: dotnet build MFO.UserService.sln --no-restore --configuration Release
