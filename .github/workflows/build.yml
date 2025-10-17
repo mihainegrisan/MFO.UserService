@@ -50,5 +50,11 @@ jobs:
       - name: Build
         run: dotnet build MFO.UserService.sln --no-restore --configuration Release
 
+      - name: Generate API clients
+        run: |
+          export SKIP_DB_INIT=true
+          dotnet tool run nswag run NSwag.json /variables:Configuration=Release
+
+
       - name: Run tests
         run: dotnet test MFO.UserService.sln --no-build --configuration Release --verbosity normal
