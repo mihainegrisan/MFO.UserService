@@ -147,14 +147,17 @@ app.UseHttpsRedirection();
 
 app.UseOutputCache();
 
-using (var scope = app.Services.CreateScope())
+if (Environment.GetEnvironmentVariable("SKIP_DB_INIT") != "true")
 {
+    using var scope = app.Services.CreateScope();
+
     var services = scope.ServiceProvider;
 
-    var context = services.GetRequiredService<AppDbContext>();
+    var context = services.GetRequiredService<AppDbContext>(); 
     //context.Database.EnsureCreated(); // checks if the database exists and creates it with the current model if it doesn't — without using migrations. This creates all the tables directly.
     DbInitializer.Initialize(context);
 }
+
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 
