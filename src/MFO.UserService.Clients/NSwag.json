@@ -1,15 +1,15 @@
 {
   "runtime": "Net90",
-  "defaultVariables": "Configuration=Debug",
+  "defaultVariables": "Configuration=$(Configuration)",
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
       "project": "../MFO.UserService.API/MFO.UserService.API.csproj",
       "documentName": "v1",
       "msBuildProjectExtensionsPath": null,
-      "configuration": null,
+      "configuration": "$(Configuration)",
       "runtime": null,
       "targetFramework": "net9.0",
-      "noBuild": true,
+      "noBuild": false,
       "msBuildOutputPath": null,
       "verbose": true,
       "workingDirectory": null,

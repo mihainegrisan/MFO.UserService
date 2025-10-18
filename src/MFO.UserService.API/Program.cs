@@ -6,7 +6,6 @@ using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Application.Mapping;
 using MFO.UserService.Application.Utilities;
 using MFO.UserService.Application.Validators.Commands;
-using MFO.UserService.Infrastructure.Data;
 using MFO.UserService.Infrastructure.Repositories;
 using MFO.UserService.Infrastructure.Services;
 using MFO.UserService.Infrastructure.Utilities;
@@ -15,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using NSwag;
 using Serilog;
 using System.Threading.RateLimiting;
+using MFO.UserService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -147,14 +147,17 @@ app.UseHttpsRedirection();
 
 app.UseOutputCache();
 
-using (var scope = app.Services.CreateScope())
+if (Environment.GetEnvironmentVariable("SKIP_DB_INIT") != "true")
 {
+    using var scope = app.Services.CreateScope();
+
     var services = scope.ServiceProvider;
 
-    var context = services.GetRequiredService<AppDbContext>();
+    var context = services.GetRequiredService<AppDbContext>(); 
     //context.Database.EnsureCreated(); // checks if the database exists and creates it with the current model if it doesn't — without using migrations. This creates all the tables directly.
     DbInitializer.Initialize(context);
 }
+
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 

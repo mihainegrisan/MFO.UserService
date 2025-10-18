@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
+using MFO.Contracts.User.DTOs;
+using MFO.UserService.Application.CommandsQueries.Queries;
+using MFO.UserService.Application.Interfaces;
+using MFO.UserService.Domain.Entities;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using System.Globalization;
-using MFO.UserService.Application.CommandsQueries.Queries;
-using MFO.Contracts.User.DTOs;
-using MFO.UserService.Application.Interfaces;
-using MFO.UserService.Domain.Entities;
 
 namespace MFO.UserService.UnitTests.Application.QueryTests;
 
@@ -17,16 +16,14 @@ public class GetUserByEmailQueryHandlerTests
     private GetUserByEmailQueryHandler _getUserByEmailQueryHandler;
     private IUserRepository _userRepository;
     private IMapper _mapper;
-    private IValidator<GetUserByEmailQuery> _validator;
 
     [SetUp]
     public void Setup()
     {
         _userRepository = Substitute.For<IUserRepository>();
         _mapper = Substitute.For<IMapper>();
-        _validator = Substitute.For<IValidator<GetUserByEmailQuery>>();
 
-        _getUserByEmailQueryHandler = new GetUserByEmailQueryHandler(_userRepository, _mapper, _validator);
+        _getUserByEmailQueryHandler = new GetUserByEmailQueryHandler(_userRepository, _mapper);
     }
 
     [Test]
@@ -61,10 +58,6 @@ public class GetUserByEmailQueryHandlerTests
             .Map<GetUserDto>(Arg.Any<User>())
             .Returns(getUserDto);
 
-        _validator
-            .ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None)
-            .Returns(Task.FromResult(new ValidationResult()));
-
         var query = new GetUserByEmailQuery(new GetUserByEmailDto("email@gmail.com"));
 
         // Act
@@ -86,27 +79,14 @@ public class GetUserByEmailQueryHandlerTests
             Assert.That(dto.IsActive, Is.True);
         }
 
-        await _validator.Received(1).ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None);
         await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
         _mapper.Received(1).Map<GetUserDto>(Arg.Any<User>());
     }
 
     [Test]
-    [TestCase("Email is required.")]
-    [TestCase("Invalid email format.")]
-    [TestCase("Email must not exceed 100 characters.")]
-    [TestCase("Email must be unique.")]
-    public async Task Handle_InvalidDto_ReturnsFailure_DoesNotCallRepoOrMapper(string errorMessage)
+    public async Task Handle_InvalidDto_ReturnsFailure_DoesNotCallMapper()
     {
         // Arrange
-        var failures = new[] {
-            new ValidationFailure("Email", errorMessage)
-        };
-
-        _validator
-            .ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None)
-            .Returns(Task.FromResult(new ValidationResult(failures)));
-
         var query = new GetUserByEmailQuery(new GetUserByEmailDto(string.Empty));
 
         // Act
@@ -119,11 +99,10 @@ public class GetUserByEmailQueryHandlerTests
             Assert.That(result.IsSuccess, Is.False, "Expected success flag to be false");
             Assert.That(result.ValueOrDefault, Is.Null, "Expected null Value");
             Assert.That(result.Errors.Count, Is.EqualTo(1), "Should have exactly one error");
-            Assert.That(result.Errors[0].Message, Is.EqualTo(errorMessage), $"Expected error message: '{errorMessage}'");
+            Assert.That(result.Errors[0].Message, Is.EqualTo("User with Email '' not found."));
         }
 
-        await _validator.Received(1).ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None);
-        await _userRepository.DidNotReceive().GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
+        await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
         _mapper.DidNotReceiveWithAnyArgs().Map<GetUserDto>(null);
     }
 
@@ -131,9 +110,6 @@ public class GetUserByEmailQueryHandlerTests
     public async Task Handle_UserNotFound_ReturnsFailure_DoesNotCallMapper()
     {
         // Arrange
-        _validator
-            .ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None)
-            .Returns(Task.FromResult(new ValidationResult()));
         _userRepository
             .GetByEmailAsync(Arg.Any<string>(), CancellationToken.None)
             .ReturnsNull();
@@ -151,10 +127,9 @@ public class GetUserByEmailQueryHandlerTests
             Assert.That(result.IsSuccess, Is.False, "Expected success flag to be false");
             Assert.That(result.ValueOrDefault, Is.Null, "Expected null Value");
             Assert.That(result.Errors.Count, Is.EqualTo(1), "Should have exactly one error");
-            Assert.That(result.Errors[0].Message, Is.EqualTo("User not found"), "Expected error message: 'User not found'.");
+            Assert.That(result.Errors[0].Message, Is.EqualTo("User with Email 'rand@gmail.com' not found."));
         }
 
-        await _validator.Received(1).ValidateAsync(Arg.Any<GetUserByEmailQuery>(), CancellationToken.None);
         await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
         _mapper.DidNotReceiveWithAnyArgs().Map<GetUserDto>(null);
         // Mapper.DidNotReceive().Map<GetUserDto>(Arg.Any<User>());

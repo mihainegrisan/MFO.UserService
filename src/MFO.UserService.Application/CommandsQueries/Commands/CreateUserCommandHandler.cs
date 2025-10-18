@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using FluentResults;
-using FluentValidation;
 using MediatR;
 using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Interfaces;
@@ -19,7 +18,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
     public CreateUserCommandHandler(
         IUserRepository userRepository,
         IMapper mapper,
-        IValidator<CreateUserCommand> validator,
         IPasswordHasherService passwordHasherService)
     {
         _userRepository = userRepository;
