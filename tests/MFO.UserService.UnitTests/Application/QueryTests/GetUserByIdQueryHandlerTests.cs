@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using NSubstitute;
 using MFO.UserService.Application.CommandsQueries.Queries;
 using MFO.UserService.Application.Interfaces;
+using NSubstitute;
 
 namespace MFO.UserService.UnitTests.Application.QueryTests;
 

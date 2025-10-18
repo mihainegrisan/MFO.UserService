@@ -17,8 +17,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 
     public GetUserByEmailQueryHandler(
         IUserRepository userRepository,
-        IMapper mapper,
-        IValidator<GetUserByEmailQuery> validator)
+        IMapper mapper)
     {
         _userRepository = userRepository;
         _mapper = mapper;

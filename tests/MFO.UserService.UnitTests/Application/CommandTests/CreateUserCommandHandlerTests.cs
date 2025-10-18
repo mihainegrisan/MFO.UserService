@@ -11,7 +11,6 @@ public class CreateUserCommandHandlerTests
 {
     private IUserRepository _userRepository;
     private IMapper _mapper;
-    private IValidator<CreateUserCommand> _validator;
     private IPasswordHasherService _passwordHasherService;
     private CreateUserCommandHandler _createUserCommandHandler;
 
@@ -20,9 +19,8 @@ public class CreateUserCommandHandlerTests
     {
         _userRepository = Substitute.For<IUserRepository>();
         _mapper = Substitute.For<IMapper>();
-        _validator = Substitute.For<IValidator<CreateUserCommand>>();
         _passwordHasherService = Substitute.For<IPasswordHasherService>();
-        _createUserCommandHandler = new CreateUserCommandHandler(_userRepository, _mapper, _validator, _passwordHasherService);
+        _createUserCommandHandler = new CreateUserCommandHandler(_userRepository, _mapper, _passwordHasherService);
     }
 
     [Test]
