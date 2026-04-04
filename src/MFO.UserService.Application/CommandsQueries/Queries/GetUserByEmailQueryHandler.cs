@@ -8,9 +8,9 @@ using MFO.UserService.Domain.Errors;
 
 namespace MFO.UserService.Application.CommandsQueries.Queries;
 
-public sealed record GetUserByEmailQuery(GetUserByEmailDto User) : IRequest<Result<GetUserDto>>;
+public sealed record GetUserByEmailQuery(GetUserByEmailDto User) : IRequest<Result<UserDto>>;
 
-public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, Result<GetUserDto>>
+public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, Result<UserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
         _mapper = mapper;
     }
 
-    public async Task<Result<GetUserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
+    public async Task<Result<UserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByEmailAsync(request.User.Email, cancellationToken);
         if (user is null)
@@ -31,7 +31,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
             return Result.Fail(new NotFoundError($"User with Email '{request.User.Email}' not found."));
         }
 
-        var userDto = _mapper.Map<GetUserDto>(user);
+        var userDto = _mapper.Map<UserDto>(user);
 
         return Result.Ok(userDto);
     }

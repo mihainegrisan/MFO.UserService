@@ -7,9 +7,9 @@ using MFO.UserService.Domain.Errors;
 
 namespace MFO.UserService.Application.CommandsQueries.Commands;
 
-public record DeactivateUserCommand(Guid Id) : IRequest<Result<GetUserDto>>;
+public record DeactivateUserCommand(Guid Id) : IRequest<Result<UserDto>>;
 
-public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserCommand, Result<GetUserDto>>
+public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserCommand, Result<UserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -20,12 +20,12 @@ public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserComman
         _mapper = mapper;
     }
 
-    public async Task<Result<GetUserDto>> Handle(DeactivateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UserDto>> Handle(DeactivateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (user is null)
         {
-            return Result.Fail<GetUserDto>(new NotFoundError($"User with ID '{request.Id}' not found."));
+            return Result.Fail<UserDto>(new NotFoundError($"User with ID '{request.Id}' not found."));
         }
 
         var deactivated = await _userRepository.SetUserActiveStateAsync(user, false, cancellationToken);
@@ -34,7 +34,7 @@ public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserComman
             return Result.Fail($"Failed to deactivate user with ID '{request.Id}'.");
         }
 
-        var userDto = _mapper.Map<GetUserDto>(deactivated);
+        var userDto = _mapper.Map<UserDto>(deactivated);
 
         return Result.Ok(userDto);
     }

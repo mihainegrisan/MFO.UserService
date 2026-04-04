@@ -40,7 +40,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns the user with the corresponding id</response>
     /// <response code="404">If the user wasn't found</response>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserById(Guid id, CancellationToken cancellationToken)
@@ -83,7 +83,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns the user with the corresponding email</response>
     /// <response code="404">If the user wasn't found</response>
     [HttpPost("search")]
-    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserByEmail([FromBody] GetUserByEmailDto user, CancellationToken cancellationToken)
@@ -129,7 +129,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns all users</response>
     [HttpGet]
     [OutputCache(PolicyName = CachePolicies.GetAll)]
-    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllUsers([FromQuery] int? pageNumber, [FromQuery] int? pageSize, CancellationToken cancellationToken)
     {
@@ -171,7 +171,7 @@ public class UsersController : ControllerBase
     /// <response code="201">Returns the newly created user</response>
     /// <response code="400">If it fails to create the user due to validation errors</response>
     [HttpPost]
-    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserDto user, CancellationToken cancellationToken)
     {
@@ -188,11 +188,11 @@ public class UsersController : ControllerBase
 
         var createdUser = result.Value;
 
-        _logger.LogInformation("User created successfully with Id: {UserId}", createdUser.Id);
+        _logger.LogInformation("User created successfully with Id: {UserId}", createdUser.UserId);
 
         return CreatedAtAction(
             nameof(GetUserById),
-            new { id = createdUser.Id },
+            new { id = createdUser.UserId },
             createdUser
         );
     }
@@ -221,14 +221,14 @@ public class UsersController : ControllerBase
     /// <response code="400">If it fails to update the user due to validation errors</response>
     /// <response code="404">If no user is found</response>
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(typeof(GetUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<IError>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserDto user, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received PUT request to update user: {@User}", user);
 
-        if (id != user.Id)
+        if (id != user.UserId)
         {
             return BadRequest("Mismatched user ID.");
         }
@@ -249,7 +249,7 @@ public class UsersController : ControllerBase
 
         var updatedUser = result.Value;
 
-        _logger.LogInformation("User with Id: {UserId} was updated successfully.", updatedUser.Id);
+        _logger.LogInformation("User with Id: {UserId} was updated successfully.", updatedUser.UserId);
 
         return Ok(updatedUser);
     }
@@ -293,7 +293,7 @@ public class UsersController : ControllerBase
 
         var deactivatedUser = result.Value;
 
-        _logger.LogInformation("User with Id: {UserId} was deactivated successfully.", deactivatedUser.Id);
+        _logger.LogInformation("User with Id: {UserId} was deactivated successfully.", deactivatedUser.UserId);
 
         return Ok(deactivatedUser);
     }
