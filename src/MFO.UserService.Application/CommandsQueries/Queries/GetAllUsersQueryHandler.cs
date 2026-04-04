@@ -6,9 +6,9 @@ using MFO.UserService.Application.Interfaces;
 
 namespace MFO.UserService.Application.CommandsQueries.Queries;
 
-public sealed record GetAllUsersQuery(int? PageNumber, int? PageSize) : IRequest<Result<IReadOnlyList<GetUserDto>>>;
+public sealed record GetAllUsersQuery(int? PageNumber, int? PageSize) : IRequest<Result<IReadOnlyList<UserDto>>>;
 
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<IReadOnlyList<GetUserDto>>>
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<IReadOnlyList<UserDto>>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
         _mapper = mapper;
     }
 
-    public async Task<Result<IReadOnlyList<GetUserDto>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<UserDto>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var pageSize = request.PageSize.GetValueOrDefault(DefaultPageSize);
         var pageNumber = request.PageNumber.HasValue
@@ -34,13 +34,13 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Result<
 
         if (users.Count is 0)
         {
-            return Result.Ok<IReadOnlyList<GetUserDto>>(new List<GetUserDto>());
+            return Result.Ok<IReadOnlyList<UserDto>>(new List<UserDto>());
         }
         
         var usersDto = users
-            .Select(user => _mapper.Map<GetUserDto>(user))
+            .Select(user => _mapper.Map<UserDto>(user))
             .ToList();
 
-        return Result.Ok<IReadOnlyList<GetUserDto>>(usersDto);
+        return Result.Ok<IReadOnlyList<UserDto>>(usersDto);
     }
 }

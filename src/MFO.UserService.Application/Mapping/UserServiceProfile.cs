@@ -16,7 +16,7 @@ public class UserServiceProfile : Profile
         // CreateMap<SourceType, DestinationType>();
 
         // Entity → DTO
-        CreateMap<User, GetUserDto>();
+        CreateMap<User, UserDto>();
 
         // DTO → Entity(for create / update)
         CreateMap<CreateUserDto, User>();

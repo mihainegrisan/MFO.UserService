@@ -53,11 +53,11 @@ public class GetAllUsersQueryHandlerTests
             }
         };
 
-        var getUsersDto = new List<GetUserDto>
+        var getUsersDto = new List<UserDto>
         {
             new()
             {
-                Id = new Guid("e005a010-c116-42cf-ac78-01b8290d2bbb"),
+                UserId = new Guid("e005a010-c116-42cf-ac78-01b8290d2bbb"),
                 FirstName = "Bob",
                 LastName = "Tall",
                 IsActive = true,
@@ -66,7 +66,7 @@ public class GetAllUsersQueryHandlerTests
             },
             new()
             {
-                Id = new Guid("e005a010-c116-42cf-ac78-01b8290d2aaa"),
+                UserId = new Guid("e005a010-c116-42cf-ac78-01b8290d2aaa"),
                 FirstName = "Colt",
                 LastName = "Small",
                 IsActive = true,
@@ -79,10 +79,10 @@ public class GetAllUsersQueryHandlerTests
             .GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None)
             .Returns(Task.FromResult(users));
         _mapper
-            .Map<GetUserDto>(users[0])
+            .Map<UserDto>(users[0])
             .Returns(getUsersDto[0]);
         _mapper
-            .Map<GetUserDto>(users[1])
+            .Map<UserDto>(users[1])
             .Returns(getUsersDto[1]);
 
         var query = new GetAllUsersQuery(1, 2);
@@ -99,14 +99,14 @@ public class GetAllUsersQueryHandlerTests
             Assert.That(result.Value.Count, Is.EqualTo(2), "Value should have exactly 2 items");
 
             var dto1 = result.Value[0];
-            Assert.That(dto1.Id, Is.EqualTo(guid1), "Id should match");
+            Assert.That(dto1.UserId, Is.EqualTo(guid1), "Id should match");
             Assert.That(dto1.Email, Is.EqualTo("bob@gmail.com"), "Email should match");
             Assert.That(dto1.FirstName, Is.EqualTo("Bob"), "FirstName should match");
             Assert.That(dto1.LastName, Is.EqualTo("Tall"), "LastName should match");
             Assert.That(dto1.CreatedAt, Is.EqualTo(users[0].CreatedDate).Within(TimeSpan.FromSeconds(1)), "CreatedAt should match");
 
             var dto2 = result.Value[1];
-            Assert.That(dto2.Id, Is.EqualTo(guid2), "Id should match");
+            Assert.That(dto2.UserId, Is.EqualTo(guid2), "Id should match");
             Assert.That(dto2.Email, Is.EqualTo("colt@gmail.com"), "Email should match");
             Assert.That(dto2.FirstName, Is.EqualTo("Colt"), "FirstName should match");
             Assert.That(dto2.LastName, Is.EqualTo("Small"), "LastName should match");
@@ -114,7 +114,7 @@ public class GetAllUsersQueryHandlerTests
         }
 
         await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);
-        _mapper.Received(2).Map<GetUserDto>(Arg.Any<User>());
+        _mapper.Received(2).Map<UserDto>(Arg.Any<User>());
     }
 
     [Test]
@@ -140,6 +140,6 @@ public class GetAllUsersQueryHandlerTests
 
         await _userRepository.Received(1).GetAllAsync(Arg.Any<int>(), Arg.Any<int>(), CancellationToken.None);
 
-        _mapper.DidNotReceiveWithAnyArgs().Map<GetUserDto>(null);
+        _mapper.DidNotReceiveWithAnyArgs().Map<UserDto>(null);
     }
 }

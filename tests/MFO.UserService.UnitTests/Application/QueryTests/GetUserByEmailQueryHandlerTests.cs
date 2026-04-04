@@ -40,9 +40,9 @@ public class GetUserByEmailQueryHandlerTests
             Email = "email@gmail.com",
             CreatedDate = DateTime.ParseExact("21-05-2025", "dd-MM-yyyy", CultureInfo.InvariantCulture),
         };
-        var getUserDto = new GetUserDto()
+        var UserDto = new UserDto()
         {
-            Id = guid,
+            UserId = guid,
             FirstName = "Bob",
             LastName = "Tall",
             IsActive = true,
@@ -55,10 +55,10 @@ public class GetUserByEmailQueryHandlerTests
             .Returns(Task.FromResult(user));
 
         _mapper
-            .Map<GetUserDto>(Arg.Any<User>())
-            .Returns(getUserDto);
+            .Map<UserDto>(Arg.Any<User>())
+            .Returns(UserDto);
 
-        var query = new GetUserByEmailQuery(new GetUserByEmailDto("email@gmail.com"));
+        var query = new GetUserByEmailQuery(new GetUserByEmailDto { Email = "email@gmail.com" } );
 
         // Act
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
@@ -71,7 +71,7 @@ public class GetUserByEmailQueryHandlerTests
             Assert.That(result.ValueOrDefault, Is.Not.Null, "Expected non-null Value");
 
             var dto = result.Value!;
-            Assert.That(dto.Id, Is.EqualTo(guid), "Id should match");
+            Assert.That(dto.UserId, Is.EqualTo(guid), "UserId should match");
             Assert.That(dto.Email, Is.EqualTo("email@gmail.com"), "Email should match");
             Assert.That(dto.FirstName, Is.EqualTo("Bob"), "FirstName should match");
             Assert.That(dto.LastName, Is.EqualTo("Tall"), "LastName should match");
@@ -80,14 +80,14 @@ public class GetUserByEmailQueryHandlerTests
         }
 
         await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
-        _mapper.Received(1).Map<GetUserDto>(Arg.Any<User>());
+        _mapper.Received(1).Map<UserDto>(Arg.Any<User>());
     }
 
     [Test]
     public async Task Handle_InvalidDto_ReturnsFailure_DoesNotCallMapper()
     {
         // Arrange
-        var query = new GetUserByEmailQuery(new GetUserByEmailDto(string.Empty));
+        var query = new GetUserByEmailQuery(new GetUserByEmailDto { Email = string.Empty});
 
         // Act
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
@@ -103,7 +103,7 @@ public class GetUserByEmailQueryHandlerTests
         }
 
         await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
-        _mapper.DidNotReceiveWithAnyArgs().Map<GetUserDto>(null);
+        _mapper.DidNotReceiveWithAnyArgs().Map<UserDto>(null);
     }
 
     [Test]
@@ -114,7 +114,7 @@ public class GetUserByEmailQueryHandlerTests
             .GetByEmailAsync(Arg.Any<string>(), CancellationToken.None)
             .ReturnsNull();
 
-        var query = new GetUserByEmailQuery(new GetUserByEmailDto("rand@gmail.com"));
+        var query = new GetUserByEmailQuery(new GetUserByEmailDto { Email = "rand@gmail.com"});
 
         // Act
         var result = await _getUserByEmailQueryHandler.Handle(query, CancellationToken.None);
@@ -131,7 +131,7 @@ public class GetUserByEmailQueryHandlerTests
         }
 
         await _userRepository.Received(1).GetByEmailAsync(Arg.Any<string>(), CancellationToken.None);
-        _mapper.DidNotReceiveWithAnyArgs().Map<GetUserDto>(null);
-        // Mapper.DidNotReceive().Map<GetUserDto>(Arg.Any<User>());
+        _mapper.DidNotReceiveWithAnyArgs().Map<UserDto>(null);
+        // Mapper.DidNotReceive().Map<UserDto>(Arg.Any<User>());
     }
 }

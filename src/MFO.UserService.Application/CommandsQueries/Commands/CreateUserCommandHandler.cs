@@ -7,9 +7,9 @@ using MFO.UserService.Domain.Entities;
 
 namespace MFO.UserService.Application.CommandsQueries.Commands;
 
-public sealed record CreateUserCommand(CreateUserDto User) : IRequest<Result<GetUserDto>>;
+public sealed record CreateUserCommand(CreateUserDto User) : IRequest<Result<UserDto>>;
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<GetUserDto>>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<UserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -25,7 +25,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         _passwordHasherService = passwordHasherService;
     }
 
-    public async Task<Result<GetUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var userExists = await _userRepository.ExistsByEmailAsync(request.User.Email, cancellationToken);
         if (userExists)
@@ -44,7 +44,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         
         await _userRepository.AddAsync(user, cancellationToken);
 
-        var userDto = _mapper.Map<GetUserDto>(user);
+        var userDto = _mapper.Map<UserDto>(user);
 
         return Result.Ok(userDto);
     }

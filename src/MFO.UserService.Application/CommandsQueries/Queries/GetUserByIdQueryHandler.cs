@@ -7,9 +7,9 @@ using MFO.UserService.Domain.Errors;
 
 namespace MFO.UserService.Application.CommandsQueries.Queries;
 
-public sealed record GetUserByIdQuery(Guid Id) : IRequest<Result<GetUserDto>>;
+public sealed record GetUserByIdQuery(Guid Id) : IRequest<Result<UserDto>>;
 
-public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<GetUserDto>>
+public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<UserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<
         _mapper = mapper;
     }
 
-    public async Task<Result<GetUserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<UserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
@@ -31,7 +31,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<
             return Result.Fail(new NotFoundError($"User with ID '{request.Id}' not found."));
         }
 
-        var userDto = _mapper.Map<GetUserDto>(user);
+        var userDto = _mapper.Map<UserDto>(user);
         return Result.Ok(userDto);
     }
 }
