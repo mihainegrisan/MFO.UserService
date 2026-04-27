@@ -5,7 +5,9 @@ namespace MFO.UserService.Infrastructure.Persistence;
 
 public class AppDbContext : DbContext
 {
-    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<User> Users { get; set; }
+
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public AppDbContext(DbContextOptions options) : base(options)
     {

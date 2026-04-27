@@ -17,6 +17,7 @@ using NSwag;
 using Serilog;
 using System.Threading.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using MFO.UserService.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,7 +75,12 @@ builder.Services.AddDbContext<AppDbContext>(options
     => options.UseSqlServer(builder.Configuration.GetConnectionString("UserContext")));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+
+builder.Services.AddTransient<ITokenGenerator, TokenGenerator>();
+
 
 // This points to the assembly where the MediatR handlers are located.
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserByIdQueryHandler).Assembly));

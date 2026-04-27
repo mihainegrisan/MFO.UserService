@@ -1,13 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
 using MFO.UserService.Application.DTOs;
 using MFO.UserService.Application.Interfaces;
-using MFO.UserService.Application.Options;
+using MFO.UserService.Domain.Entities;
 using MFO.UserService.Domain.Errors;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace MFO.UserService.Application.CommandsQueries.Commands;
 
@@ -17,13 +13,19 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
 {
     private IUserRepository _userRepository;
     private IPasswordHasherService _passwordHasherService;
-    private AuthenticationOptions _authenticationOptions;
+    private ITokenGenerator _tokenGenerator;
+    private IRefreshTokenRepository _refreshTokenRepository;
 
-    public AuthenticateUserCommandHandler(IUserRepository userRepository, IPasswordHasherService passwordHasherService, IOptions<AuthenticationOptions> options)
+    public AuthenticateUserCommandHandler(
+        IUserRepository userRepository,
+        IPasswordHasherService passwordHasherService,
+        ITokenGenerator tokenGenerator,
+        IRefreshTokenRepository refreshTokenRepository)
     {
         _userRepository = userRepository;
         _passwordHasherService = passwordHasherService;
-        _authenticationOptions = options.Value;
+        _tokenGenerator = tokenGenerator;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<Result<AuthenticationResponse>> Handle(AuthenticateUserCommand request, CancellationToken cancellationToken)
@@ -34,37 +36,28 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
             return Result.Fail(new NotFoundError($"User with Email '{request.Email}' not found."));
         }
 
+        // At this point, we found a user which must have a password hash
         if (!_passwordHasherService.VerifyPassword(user.PasswordHash, request.Password))
         {
             return Result.Fail(new UnauthorizedAccessError("Unauthorized access for the provided email and password."));
         }
 
-        // Step 2: Create a token
-        var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_authenticationOptions.SecretForKey));
+        var accessToken = _tokenGenerator.GenerateAccessToken(user);
+        var refreshToken = _tokenGenerator.GenerateRefreshToken();
 
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        var claimsForToken = new List<Claim>
+        await _refreshTokenRepository.AddAsync(new RefreshToken
         {
-            new (JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-            new (JwtRegisteredClaimNames.GivenName, user.FirstName),
-            new (JwtRegisteredClaimNames.FamilyName, user.LastName),
-            new (JwtRegisteredClaimNames.Email, user.Email)
-        };
-
-        var jwtSecurityToken = new JwtSecurityToken(
-            _authenticationOptions.Issuer,
-            _authenticationOptions.Audience,
-            claimsForToken,
-            DateTime.UtcNow,
-            DateTime.UtcNow.AddHours(1),
-            signingCredentials);
-
-        var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            RefreshTokenId = Guid.CreateVersion7(),
+            UserId = user.UserId,
+            Token = refreshToken,
+            CreatedAtUtc = DateTime.UtcNow,
+            ExpiresAtUtc = DateTime.UtcNow.AddDays(7)
+        }, cancellationToken);
 
         return Result.Ok(new AuthenticationResponse
         {
-            AccessToken = tokenToReturn
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         });
     }
 }
