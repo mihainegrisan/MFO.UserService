@@ -19,14 +19,14 @@ public class AuthenticationController : ControllerBase
     }
 
     // Won't use this outside of this class, so I'm scoping it to this namespace
-    public class AuthenticationRequestBody
+    public class LoginRequest
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(AuthenticationRequestBody request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login(LoginRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received POST request for user with Email: {Email}", request.Email);
 
@@ -49,6 +49,35 @@ public class AuthenticationController : ControllerBase
             }
 
             _logger.LogWarning("Failed to authenticate user with Email: {Email}. Errors: {@Errors}", request.Email, result.Errors);
+
+            return BadRequest(result.Errors);
+        }
+
+        return Ok(result.Value);
+    }
+
+    public class RefreshRequest
+    {
+        public required string RefreshToken { get; set; }
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received POST request for RefreshToken rotation.");
+
+        var result = await _mediator.Send(new RefreshTokenCommand(request.RefreshToken), cancellationToken);
+
+        if (result.IsFailed)
+        {
+            if (result.HasError<UnauthorizedAccessError>())
+            {
+                _logger.LogInformation("Unauthorized");
+
+                return Unauthorized();
+            }
+
+            _logger.LogWarning("Failed to rotate RefreshToken. Errors: {@Errors}", result.Errors);
 
             return BadRequest(result.Errors);
         }
