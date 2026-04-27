@@ -25,13 +25,11 @@ public class AuthenticationController : ControllerBase
         public required string Password { get; set; }
     }
 
-    [HttpPost("authenticate")]
-    public async Task<IActionResult> Authenticate(AuthenticationRequestBody request, CancellationToken cancellationToken)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(AuthenticationRequestBody request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received POST request for user with Email: {Email}", request.Email);
 
-        // Step 1: Validate the credentials (email and password)
-        //var user = ValidateUserCredentials(request.Email, request.Password);
         var result = await _mediator.Send(new AuthenticateUserCommand(request.Email, request.Password), cancellationToken);
 
         if (result.IsFailed)
