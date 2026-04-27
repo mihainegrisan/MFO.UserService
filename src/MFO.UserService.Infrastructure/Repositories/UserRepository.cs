@@ -26,7 +26,7 @@ public class UserRepository : IUserRepository
     public async Task<List<User>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         => await _db.Users
             .AsNoTracking()
-            .OrderBy(u => u.Id)
+            .OrderBy(u => u.UserId)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

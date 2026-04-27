@@ -4,7 +4,7 @@ namespace MFO.UserService.Domain.Entities;
 
 public class User : AuditableEntity
 {
-    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
 
     public string? FirstName { get; set; }
 

@@ -7,10 +7,12 @@ using MFO.UserService.Application.CommandsQueries.Queries;
 using MFO.Contracts.User.DTOs;
 using MFO.UserService.Application.Utilities;
 using MFO.UserService.Domain.Errors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MFO.UserService.API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {

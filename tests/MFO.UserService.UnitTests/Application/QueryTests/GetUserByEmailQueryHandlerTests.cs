@@ -33,7 +33,7 @@ public class GetUserByEmailQueryHandlerTests
         var guid = new Guid("e005a010-c116-42cf-ac78-01b8290d2a2d");
         var user = new User
         {
-            Id = guid,
+            UserId = guid,
             FirstName = "Bob",
             LastName = "Tall",
             IsActive = true,

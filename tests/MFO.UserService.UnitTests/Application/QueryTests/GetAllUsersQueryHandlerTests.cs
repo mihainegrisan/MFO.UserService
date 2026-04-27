@@ -44,7 +44,7 @@ public class GetAllUsersQueryHandlerTests
             },
             new()
             {
-                Id = guid2,
+                UserId = guid2,
                 FirstName = "Colt",
                 LastName = "Small",
                 IsActive = true,

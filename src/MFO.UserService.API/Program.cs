@@ -4,8 +4,10 @@ using MFO.UserService.API.Middlewares;
 using MFO.UserService.Application.CommandsQueries.Queries;
 using MFO.UserService.Application.Interfaces;
 using MFO.UserService.Application.Mapping;
+using MFO.UserService.Application.Options;
 using MFO.UserService.Application.Utilities;
 using MFO.UserService.Application.Validators.Commands;
+using MFO.UserService.Infrastructure.Persistence;
 using MFO.UserService.Infrastructure.Repositories;
 using MFO.UserService.Infrastructure.Services;
 using MFO.UserService.Infrastructure.Utilities;
@@ -14,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using NSwag;
 using Serilog;
 using System.Threading.RateLimiting;
-using MFO.UserService.Infrastructure.Persistence;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -110,6 +112,10 @@ builder.Services.AddOpenApiDocument(options =>
     };
 });
 
+builder.Services.Configure<AuthenticationOptions>(
+    builder.Configuration.GetSection(
+        key: nameof(AuthenticationOptions)));
+
 // Uncomment the following line to enable CORS for all origins, methods, and headers.
 // builder.Services.AddCors(options => options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
@@ -124,6 +130,35 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new()
+        {
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = builder.Configuration["AuthenticationOptions:Issuer"], // ensures we only accept tokens created by this API
+            ValidAudience = builder.Configuration["AuthenticationOptions:Audience"], // the token is meant for the audience - only this API for now
+            // ValidAudiences = 
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(builder.Configuration["AuthenticationOptions:SecretForKey"])),
+        };
+    });
+
+// Optional: add authorization policies if needed
+builder.Services.AddAuthorization();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -145,6 +180,8 @@ app.UseRateLimiter();
 
 app.UseHttpsRedirection();
 
+app.UseCors("Frontend");
+
 app.UseOutputCache();
 
 if (Environment.GetEnvironmentVariable("SKIP_DB_INIT") != "true")
@@ -153,15 +190,20 @@ if (Environment.GetEnvironmentVariable("SKIP_DB_INIT") != "true")
 
     var services = scope.ServiceProvider;
 
-    var context = services.GetRequiredService<AppDbContext>(); 
+    var context = services.GetRequiredService<AppDbContext>();
+    var hasher = services.GetRequiredService<IPasswordHasherService>();
     //context.Database.EnsureCreated(); // checks if the database exists and creates it with the current model if it doesn't — without using migrations. This creates all the tables directly.
-    DbInitializer.Initialize(context);
+    DbInitializer.Initialize(context, hasher);
 }
 
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapShortCircuit(404, "robots.txt", "favicon.ico");
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app
     .MapControllers()
