@@ -84,4 +84,19 @@ public class AuthenticationController : ControllerBase
 
         return Ok(result.Value);
     }
+
+    public class LogoutRequest
+    {
+        public string RefreshToken { get; set; } = string.Empty;
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(LogoutRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received POST request for Logout.");
+
+        await _mediator.Send(new LogoutCommand(request.RefreshToken), cancellationToken);
+
+        return NoContent();
+    }
 }
